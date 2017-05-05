@@ -250,6 +250,140 @@
   
 
   <article class="post post-type-normal " itemscope itemtype="http://schema.org/Article">
+    <link itemprop="mainEntityOfPage" href="http://yoursite.com/2017/05/05/rosactionlib/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="Guo Xiaodong">
+      <meta itemprop="description" content="">
+      <meta itemprop="image" content="/uploads/avatar.jpg">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="Guo Xiaodong's Blog">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">
+                
+                <a class="post-title-link" href="/2017/05/05/rosactionlib/" itemprop="url">rosactionlib-带反馈的rosservice</a></h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">发表于</span>
+              
+              <time title="创建于" itemprop="dateCreated datePublished" datetime="2017-05-05T21:10:53+08:00">
+                2017-05-05
+              </time>
+            
+
+            
+
+            
+          </span>
+
+          
+            <span class="post-category" >
+            
+              <span class="post-meta-divider">|</span>
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">分类于</span>
+              
+              
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/ROS/" itemprop="url" rel="index">
+                    <span itemprop="name">ROS</span>
+                  </a>
+                </span>
+
+                
+                
+              
+            </span>
+          
+
+          
+            
+          
+
+          
+          
+
+          
+
+          
+
+          
+
+        </div>
+      </header>
+    
+
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        
+          
+            <p>1.作用<br>在ROS中，经常出现1个节点向另外的节点请求执行任务的情况。一般情况下，我们可以用到ROS Services。节点可以向另外的节点发送一条请求信息，另外的节点在任务执行完成后返回结果信息。但是短时间的任务这很有用，比如讲四元数姿态转换成欧拉角。但是，对于需要长时间完成的任务，而我们又像知道任务执行的中间状态。比如请求机器人移动到某一点，而我们想知道它实时的中间位置。这个时候就需要利用ROS的另外一个机制，ROS actionlib了。<br>2.结构<br>上面是ROS wiki的图。与Services一样，也是分为server和client两部分。可以非常方便的在该接口之上添加自己的代码。<br><img src="/2017/05/05/rosactionlib/structure.png" alt=""><br>3.数据类型<br><img src="/2017/05/05/rosactionlib/data.png" alt=""><br>这是ROS wiki示例的.action文件。用—隔开隔开分为三部分。分别是request部分，feedback部分以及result部分。在.action文件里面制定每部分消息的类型。详细的介绍在<a href="http://wiki.ros.org/actionlib" target="_blank" rel="external">http://wiki.ros.org/actionlib</a>.</p>
+
+          
+        
+      
+    </div>
+
+    <div>
+      
+    </div>
+
+    <div>
+      
+    </div>
+
+    <div>
+      
+    </div>
+
+    <footer class="post-footer">
+      
+
+      
+
+      
+
+      
+      
+        <div class="post-eof"></div>
+      
+    </footer>
+  </article>
+
+
+    
+      
+
+  
+
+  
+  
+  
+
+  <article class="post post-type-normal " itemscope itemtype="http://schema.org/Article">
     <link itemprop="mainEntityOfPage" href="http://yoursite.com/2017/05/04/guidance2/">
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
@@ -503,7 +637,7 @@
 </tr>
 </tbody>
 </table>
-<p><strong>3.输出的数据</strong><br>下面几张图是Guidance的输出数据。在终端里显示的有全局位置，超声波探测的距离，以及视觉和超声波融合的之后给出的距离。然后下面三张是双目的左图，右图，和深度图。<br><img src="http://7xt5o8.com1.z0.glb.clouddn.com/ter.png" alt="终端图"><br><img src="http://7xt5o8.com1.z0.glb.clouddn.com/left.png" alt="左图"><br><img src="http://7xt5o8.com1.z0.glb.clouddn.com/right.png" alt="右图"><br><img src="http://7xt5o8.com1.z0.glb.clouddn.com/depth.png" alt="深度图"></p>
+<p><strong>3.输出的数据</strong><br>下面几张图是Guidance的输出数据。在终端里显示的有全局位置，超声波探测的距离，以及视觉和超声波融合的之后给出的距离。然后下面三张是双目的左图，右图，和深度图。<br><img src="http://7xt5o8.com1.z0.glb.clouddn.com/ter.png" alt="终端图"><br><img src="/2017/02/18/guidance1/he.jpg" alt=""></p>
 
           
         
@@ -1526,7 +1660,7 @@ public:
           
             <div class="site-state-item site-state-posts">
               <a href="/archives">
-                <span class="site-state-item-count">6</span>
+                <span class="site-state-item-count">7</span>
                 <span class="site-state-item-name">日志</span>
               </a>
             </div>
@@ -1537,7 +1671,7 @@ public:
             
             <div class="site-state-item site-state-categories">
               
-                <span class="site-state-item-count">4</span>
+                <span class="site-state-item-count">5</span>
                 <span class="site-state-item-name">分类</span>
               
             </div>
@@ -1548,7 +1682,7 @@ public:
             
             <div class="site-state-item site-state-tags">
               
-                <span class="site-state-item-count">11</span>
+                <span class="site-state-item-count">12</span>
                 <span class="site-state-item-name">标签</span>
               
             </div>
