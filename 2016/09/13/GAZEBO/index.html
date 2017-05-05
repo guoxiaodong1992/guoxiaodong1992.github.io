@@ -1,0 +1,1068 @@
+<!doctype html>
+
+
+
+  
+
+
+<html class="theme-next pisces use-motion" lang="zh-Hans">
+<head>
+  <meta charset="UTF-8"/>
+<meta http-equiv="X-UA-Compatible" content="IE=edge" />
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1"/>
+
+
+
+
+
+
+<meta http-equiv="Cache-Control" content="no-transform" />
+<meta http-equiv="Cache-Control" content="no-siteapp" />
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+  
+  <link href="/lib/fancybox/source/jquery.fancybox.css?v=2.1.5" rel="stylesheet" type="text/css" />
+
+
+
+
+  
+  
+  
+  
+
+  
+    
+    
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+    
+    
+    <link href="//fonts.googleapis.com/css?family=Lato:300,300italic,400,400italic,700,700italic&subset=latin,latin-ext" rel="stylesheet" type="text/css">
+  
+
+
+
+
+
+
+<link href="/lib/font-awesome/css/font-awesome.min.css?v=4.6.2" rel="stylesheet" type="text/css" />
+
+<link href="/css/main.css?v=5.1.1" rel="stylesheet" type="text/css" />
+
+
+  <meta name="keywords" content="PX4,Gazebo," />
+
+
+
+
+
+
+
+
+  <link rel="shortcut icon" type="image/x-icon" href="/favicon.ico?v=5.1.1" />
+
+
+
+
+
+
+<meta name="description" content="实验背景小型四旋翼无人机具有成本低，体积小，机械结构简单，灵活性高等优势，被逐步运用到生产生活中的诸多领域，如电力线路巡检、航拍、农业植保、灾情勘察、地理测绘等。而在无人机的飞控实现完成后，要想使其完成复杂的自主飞行任务，需要设计控制算法对无人机的飞行和任务执行进行控制。而算法的仿真实现对算法的设计和验证都有重要的意义。相比实际飞行，仿真飞行减少了时间成本和物质成本，同时方便对算法的逻辑和参数进行">
+<meta name="keywords" content="PX4,Gazebo">
+<meta property="og:type" content="article">
+<meta property="og:title" content="基于PX4和Gazebo的飞行仿真">
+<meta property="og:url" content="http://yoursite.com/2016/09/13/GAZEBO/index.html">
+<meta property="og:site_name" content="Guo Xiaodong&#39;s Blog">
+<meta property="og:description" content="实验背景小型四旋翼无人机具有成本低，体积小，机械结构简单，灵活性高等优势，被逐步运用到生产生活中的诸多领域，如电力线路巡检、航拍、农业植保、灾情勘察、地理测绘等。而在无人机的飞控实现完成后，要想使其完成复杂的自主飞行任务，需要设计控制算法对无人机的飞行和任务执行进行控制。而算法的仿真实现对算法的设计和验证都有重要的意义。相比实际飞行，仿真飞行减少了时间成本和物质成本，同时方便对算法的逻辑和参数进行">
+<meta property="og:image" content="http://7xt5o8.com1.z0.glb.clouddn.com/20150402204818032%20%281%29.png">
+<meta property="og:image" content="http://7xt5o8.com1.z0.glb.clouddn.com/gss.png">
+<meta property="og:image" content="http://7xt5o8.com1.z0.glb.clouddn.com/yss.png">
+<meta property="og:image" content="http://7xt5o8.com1.z0.glb.clouddn.com/jss.png">
+<meta property="og:image" content="http://7xt5o8.com1.z0.glb.clouddn.com/oss.png">
+<meta property="og:updated_time" content="2017-05-05T09:05:53.940Z">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="基于PX4和Gazebo的飞行仿真">
+<meta name="twitter:description" content="实验背景小型四旋翼无人机具有成本低，体积小，机械结构简单，灵活性高等优势，被逐步运用到生产生活中的诸多领域，如电力线路巡检、航拍、农业植保、灾情勘察、地理测绘等。而在无人机的飞控实现完成后，要想使其完成复杂的自主飞行任务，需要设计控制算法对无人机的飞行和任务执行进行控制。而算法的仿真实现对算法的设计和验证都有重要的意义。相比实际飞行，仿真飞行减少了时间成本和物质成本，同时方便对算法的逻辑和参数进行">
+<meta name="twitter:image" content="http://7xt5o8.com1.z0.glb.clouddn.com/20150402204818032%20%281%29.png">
+
+
+
+<script type="text/javascript" id="hexo.configurations">
+  var NexT = window.NexT || {};
+  var CONFIG = {
+    root: '/',
+    scheme: 'Pisces',
+    sidebar: {"position":"left","display":"post","offset":12,"offset_float":0,"b2t":false,"scrollpercent":false},
+    fancybox: true,
+    motion: true,
+    duoshuo: {
+      userId: '0',
+      author: '博主'
+    },
+    algolia: {
+      applicationID: '',
+      apiKey: '',
+      indexName: '',
+      hits: {"per_page":10},
+      labels: {"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}
+    }
+  };
+</script>
+
+
+
+  <link rel="canonical" href="http://yoursite.com/2016/09/13/GAZEBO/"/>
+
+
+
+
+
+  <title>基于PX4和Gazebo的飞行仿真 | Guo Xiaodong's Blog</title>
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage" lang="zh-Hans">
+
+  
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+  
+    
+  
+
+  <div class="container sidebar-position-left page-post-detail ">
+    <div class="headband"></div>
+
+    <header id="header" class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-wrapper">
+  <div class="site-meta ">
+    
+
+    <div class="custom-logo-site-title">
+      <a href="/"  class="brand" rel="start">
+        <span class="logo-line-before"><i></i></span>
+        <span class="site-title">Guo Xiaodong's Blog</span>
+        <span class="logo-line-after"><i></i></span>
+      </a>
+    </div>
+      
+        <p class="site-subtitle">A Record of Study and Journey</p>
+      
+  </div>
+
+  <div class="site-nav-toggle">
+    <button>
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+    </button>
+  </div>
+</div>
+
+<nav class="site-nav">
+  
+
+  
+    <ul id="menu" class="menu">
+      
+        
+        <li class="menu-item menu-item-home">
+          <a href="/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-home"></i> <br />
+            
+            首页
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-archives">
+          <a href="/archives" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-archive"></i> <br />
+            
+            归档
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-tags">
+          <a href="/tags" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-tags"></i> <br />
+            
+            标签
+          </a>
+        </li>
+      
+
+      
+    </ul>
+  
+
+  
+</nav>
+
+
+
+ </div>
+    </header>
+
+    <main id="main" class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          <div id="content" class="content">
+            
+
+  <div id="posts" class="posts-expand">
+    
+
+  
+
+  
+  
+  
+
+  <article class="post post-type-normal " itemscope itemtype="http://schema.org/Article">
+    <link itemprop="mainEntityOfPage" href="http://yoursite.com/2016/09/13/GAZEBO/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="Guo Xiaodong">
+      <meta itemprop="description" content="">
+      <meta itemprop="image" content="/uploads/avatar.jpg">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="Guo Xiaodong's Blog">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">基于PX4和Gazebo的飞行仿真</h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">发表于</span>
+              
+              <time title="创建于" itemprop="dateCreated datePublished" datetime="2016-09-13T11:55:11+08:00">
+                2016-09-13
+              </time>
+            
+
+            
+
+            
+          </span>
+
+          
+            <span class="post-category" >
+            
+              <span class="post-meta-divider">|</span>
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">分类于</span>
+              
+              
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/四旋翼/" itemprop="url" rel="index">
+                    <span itemprop="name">四旋翼</span>
+                  </a>
+                </span>
+
+                
+                
+              
+            </span>
+          
+
+          
+            
+          
+
+          
+          
+
+          
+
+          
+
+          
+
+        </div>
+      </header>
+    
+
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        <p><strong>实验背景</strong><br>小型四旋翼无人机具有成本低，体积小，机械结构简单，灵活性高等优势，被逐步运用到生产生活中的诸多领域，如电力线路巡检、航拍、农业植保、灾情勘察、地理测绘等。而在无人机的飞控实现完成后，要想使其完成复杂的自主飞行任务，需要设计控制算法对无人机的飞行和任务执行进行控制。而算法的仿真实现对算法的设计和验证都有重要的意义。相比实际飞行，仿真飞行减少了时间成本和物质成本，同时方便对算法的逻辑和参数进行重复修改。本文利用Gazebo机器人仿真平台和PX4飞行固件对无人机飞行进行软件仿真。利用PX4的Offboard Control模式，对其进行基于GPS的和基于雷达的飞行控制。</p>
+<p><strong>PX4介绍</strong><br>PX4是一款软件和硬件同时开源飞控项目。该项目起源于瑞士苏黎世联邦理工大学的计算机视觉与几何实验室的PIXHAWK项目，是目前最流行的开源飞控之一。PX4FMU自驾仪模块运行高效的(RTOS)实时ARM操作系统，其固件同时附带了一系列工具集、系统驱动/模块与外围软件接口层，所有这些软件（包括用户自定义的飞控软件）随OS内核一起，统一编译为固件形式，然后上传到飞控板中，从而实现对飞控板的软件配置。<br>PX4配套的软件架构主要分为4层：<br>a) API层：提供给用户做开发的接口层。<br>b) 框架层：包含了操作基础飞行控制的默认程序集（节点）<br>c) 系统库：包含了所有的系统库和基本交通控制的函数<br>d) OS内核：提供硬件驱动程序、网络、UAVCAN和故障安全系统<br>以上是面向PX4系统实现者的具体的软件架构。如果从飞控应用开发者的角度对软件架构进行描述，可以将PX4软件分为两层：<br>a)PX4 Flight Stack: 自主无人机控制算法的集合。<br>b)PX4 Middleware: 针对无人机控制器，传感器等物理设备的驱动及底层通信、调度等机制的集合。<br>多态性（抽象性）是PX4软件架构最显著的特点之一。为了最大限度地保障飞控算法代码的重用性，其将飞控逻辑与底层控制器的指令实现进行了解耦合。利用同一套高层的飞控算法，即可适用于固定翼、直升机、多旋翼等多种机型的控制场合。</p>
+<p><strong>MAVLINK飞行控制协议介绍</strong><br>MAVLINK( Micro Air Vehicle Communication Protocol) 协议，是一种在串口通讯基础上的更高层的开源通信协议，主要用于微小型无人机的通信，包括无人机与地面站以及无人机和机载电脑的通信。该协议于2009年由瑞士苏黎世联邦理工大学的计算机视觉与几何实验室的Lorenz Meier，并遵循LGPL开源协议。PX4提供了对MAVLINK协议的原生支持。<br>MAVLINK协议传输的基本单位是消息帧。下图描述了消息帧的基本单位。除了灰色格子，其他的格子代表了一个字节的数据。<br><img src="http://7xt5o8.com1.z0.glb.clouddn.com/20150402204818032%20%281%29.png" alt=""><br>STX代表起始标志位，在1.0版本中，起始标志位是“FE”。该标志位用于MAVLINK消息帧的消息解码。<br>LEN代表消息帧中PAYLOAD（有效载荷）的字节长度。范围为0~255。在收到一帧消息之后，接收端可以用它和实际收到的有效载荷的字节长度进行比较，以验证有效载荷部分长度的正确性。<br>SEQ代表的是本次消息帧的序号。每发完一个消息，这个字节的内容会加1，在255之后会从0重新开始。接收端用本子节的信息计算消息丢失的比例。<br>SYS代表的是发送本次消息帧的设备系统编号。使用PX4固件的PIXHAWK设备发送消息时系统编号是1，该字节用于接收端识别发送端的设备类型。<br>COMP代表的是发送本条消息帧的设备的单元编号。使用PX4固件的PIXHAWK设备发送消息时默认的单元编号是50，该字节用于接收端识别书发送设备的哪个单元发来的消息。<br>MSG代表有效载荷中消息包的类型编号。接收端根据这个编号来确定有效载荷中的消息类型，从而进行对有效载荷部分的信息的正确解码。<br>PAYLOAD 是消息帧最重要的部分，其中包含了有效载荷的信息。不同消息类型的PAYLOAD字节数长度不一定相同。但都在0-255之间。<br>CKB和CKA是校验位。CKB是高8位校验位，CKA是第八位校验位。该校验码有CRC16算法得到，该算法将消息帧的起始位开始到有效载荷的结束部分进行CRC16计算，从而得到16位的检验码。接收端通过该16位的校验码对收到的消息帧进行校验。<br>以MSG编号为33的消息帧为例，分析消息帧的PAYLOAD组成。该帧消息用来传递无人机当前的GPS位置信息。由下图可知，该消息一共由9部分组成，PAYLOAD的长度为28个字节。消息的第1部分time_boot_ms表示发送消息时系统的时间戳。第2部分lat表示飞机的纬度值，该值是由真实的纬度值乘10的7次方得到的整型值。lon表示飞机经度值。alt表示飞机的海拔高度。而relative_alt表示飞机相对地面的高度。vx,vy,vz分别表示飞机在NED坐标下各分量的速度，以真实值乘100得到的整型值表示。hdg代表飞机当前的yaw角值，以真实值乘100得到的整型值表示。<br><img src="http://7xt5o8.com1.z0.glb.clouddn.com/gss.png" alt=""><br>再以MSG编号为76的COMMAND_LONG消息帧为例，分析地面站或者机载电脑如何通过MAVLINK给无人机发送控制指令。下图描述了该消息帧的PAYLOAD组成。该消息的PAYLOAD由11部分组成，共有33个字节。target_system表示目标的系统编号。target_component表示目标的单元编号。第三部分command非常重要，它描述了该条指令的任务类型，如起飞，降落等等。所有的任务类型在MAV_CMD中定义。不同任务类型的参数个数不一样，但最多有7个参数。<br><img src="http://7xt5o8.com1.z0.glb.clouddn.com/yss.png" alt=""><br>以在GPS导航模式下的起飞任务为例，此时command参数为MAV_CMD_NAV_TAKEOFF, 该任务模式下的参数组成如下图所示。参数1,2,3都没有具体意义。而参数4,5,6分别代表期望的角度，纬度，经度和高度。<br><img src="http://7xt5o8.com1.z0.glb.clouddn.com/jss.png" alt=""><br><strong>仿真程序分析</strong><br>Gazebo是一款3D的机器人仿真软件。利用Gazebo进行飞行仿真的程序框图如下图所示：其中SITL指的是Software in the Loop Simulation，即软件仿真。与其相对的是HIL，Hardware in the Loop Simulation, 即硬件仿真。本实验采用的是SITL。<br><img src="http://7xt5o8.com1.z0.glb.clouddn.com/oss.png" alt=""><br>Plugin是Gazebo提供给开发者的方针模型控制接口，开发者可以自主定义仿真中用到的模型的类型以及参数，并且可以利用自己的程序控制它们。本实验中主要利用了三种类型的Plugin，包括World, Model, 以及Sensor。<br>MAVROS是一个ROS程序包，它的作用就是把MAVLINK消息转换成ROS中的消息，这样就可以以话题的形式在ROS中接受订阅和发布，方便基于ROS的程序控制。<br>利用PX4的Offboard Control模式可以实现利用电脑控制无人机飞行。使用这个模式尤其需要注意的是，在开启该模式后，电脑发送给飞控板的控制指令频率不能小于2    Hz,否则飞控会自动切离该模式。<br>实验分为两个阶段。第1个阶段为起飞阶段。步骤为：切到Offboard Control模式，解锁，设置GPS目标起飞高度,程序中设定的目标起飞高度为1.2m。实验的第2个阶段是以恒定的速度通过走廊，并利用雷达的数据检测墙上的门，在检测到墙上的门之后，改变飞行方向，进入门内。</p>
+<p><strong>仿真结果</strong><br>在本次实验中，成功在单机上实现了利用GPS和雷达数据的Gazebo飞行仿真。在下一步的仿真实验中，将重点研究多无人机在同一仿真场景下的飞行控制，重点在有搭建多条通讯链路和Gazebo的控制模型，从而实现对多架无人机的同步控制，为多无人机编队算法和相应的避障算法的设计和验证提供仿真依据。</p>
+<p><em>附1：仿真视频链接</em><br><a href="http://7xt5o8.com1.z0.glb.clouddn.com/1%20%281%29.mp4" target="_blank" rel="external">http://7xt5o8.com1.z0.glb.clouddn.com/1%20%281%29.mp4</a></p>
+<p><em>附2：ros主程序代码</em></p>
+<pre><code>#include &lt;ros/ros.h&gt;
+#include &lt;offb_demo/offb_node.h&gt;
+
+
+int main(int argc, char **argv)
+{
+    ros::init(argc, argv, &quot;offb_node&quot;);
+    ros::NodeHandle nh;
+    PX4Drone* drone =new PX4Drone(nh);
+    ROS_INFO(&quot;new 0904 PX4 OFFBOARD CONTROL TEST&quot;);
+    //the setpoint publishing rate MUST be faster than 2Hz
+    ros::Rate rate(40.0);
+
+
+    //Init Para
+    drone-&gt;global_set_vel.twist.linear.x=0;
+    drone-&gt;global_set_vel.twist.linear.y=0;
+    drone-&gt;global_set_vel.twist.linear.z=0.2;
+
+
+
+
+    // wait for FCU connection
+    while(ros::ok() &amp;&amp; drone-&gt;current_state.connected){
+        ros::spinOnce();
+        rate.sleep();
+    }
+
+
+
+    //send a few setpoints before starting
+    for(int i = 100; ros::ok() &amp;&amp; i &gt; 0; --i){
+        drone-&gt;velocity_pub.publish(drone-&gt;global_set_vel);
+        ros::spinOnce();
+        rate.sleep();
+    }
+
+
+
+
+    drone-&gt;offb_set_mode.request.custom_mode = &quot;OFFBOARD&quot;;
+    drone-&gt;arm_cmd.request.value = true;
+
+
+    ros::Time last_request = ros::Time::now();
+
+    while(ros::ok())
+    {
+        ros::spinOnce();
+        rate.sleep();
+
+
+
+        drone-&gt;velocity_pub.publish(drone-&gt;global_set_vel);
+        //drone-&gt;global_pos_pub.publish(drone-&gt;ideal_global_pos);
+        if(drone-&gt;task_complete_flag==1)
+        {
+           switch(drone-&gt;task_update_flag)
+           {
+             case 0:
+            if( drone-&gt;current_state.mode != &quot;OFFBOARD&quot; &amp;&amp;
+                (ros::Time::now() - last_request &gt; ros::Duration(5.0))){
+                if( drone-&gt;set_mode_client.call(drone-&gt;offb_set_mode) &amp;&amp;
+                    drone-&gt;offb_set_mode.response.success){
+                    ROS_INFO(&quot;Offboard enabled&quot;);
+                }
+                last_request = ros::Time::now();
+            } else {
+                if( !drone-&gt;current_state.armed &amp;&amp;
+                    (ros::Time::now() - last_request &gt; ros::Duration(5.0))){
+                    if( drone-&gt;arming_client.call(drone-&gt;arm_cmd) &amp;&amp;
+                        drone-&gt;arm_cmd.response.success){
+                        ROS_INFO(&quot;Vehicle armed&quot;);
+                    }
+                    last_request = ros::Time::now();
+                }
+            }
+
+            if(drone-&gt;current_state.armed)
+            {
+              drone-&gt;initial_global_pos=drone-&gt;global_pos;
+              drone-&gt;ideal_global_pos.latitude=drone-&gt;initial_global_pos.latitude;
+              drone-&gt;ideal_global_pos.longitude=drone-&gt;initial_global_pos.longitude;
+              drone-&gt;ideal_global_pos.altitude=drone-&gt;initial_global_pos.altitude+1.2;
+              std::cout&lt;&lt;&quot;The ideal latitude is: &quot;&lt;&lt;drone-&gt;ideal_global_pos.latitude&lt;&lt;std::endl;
+              drone-&gt;task_update_flag=1;
+              drone-&gt;task_flight_mode=1;
+            }
+            break;
+
+            case 1:
+               drone-&gt;task_complete_flag=0;
+               break;
+
+           case 2:
+                  drone-&gt;task_complete_flag=0;
+                  break;
+           case 3:
+                   drone-&gt;task_complete_flag=0;
+                    break;
+          case 4:
+                    drone-&gt;task_complete_flag=0;
+                      break;
+
+
+
+            default:
+               break;
+
+          // local_pos_pub.publish(pose);
+            // drone-&gt;velocity_pub.publish(drone-&gt;global_set_vel);
+
+            //  std::cout&lt;&lt;&quot;The velocity of X is: &quot;&lt;&lt;drone-&gt;local_vel.twist.linear.x&lt;&lt;std::endl;
+            //  std::cout&lt;&lt;&quot;The Latitude is: &quot;&lt;&lt;drone-&gt;global_pos.latitude&lt;&lt;std::endl;
+      }
+    }
+    }
+
+    return 0;
+}
+</code></pre><p><em>附3：ros头文件代码</em></p>
+<pre><code>#include &lt;ros/ros.h&gt;
+#include &lt;cmath&gt;
+#include &lt;float.h&gt;
+#include &lt;iostream&gt;
+#include &lt;geometry_msgs/PoseStamped.h&gt;
+#include &lt;geometry_msgs/TwistStamped.h&gt;
+#include &lt;mavros_msgs/CommandBool.h&gt;
+#include &lt;mavros_msgs/CommandTOL.h&gt;
+#include &lt;mavros_msgs/SetMode.h&gt;
+#include &lt;mavros_msgs/State.h&gt;
+#include &lt;std_msgs/Float64.h&gt;
+#include &lt;sensor_msgs/NavSatFix.h&gt;
+#include &lt;mavros_msgs/GlobalPositionTarget.h&gt;
+#include &lt;mavros_msgs/OpticalFlowRad.h&gt;
+
+
+#define CONSTANTS_RADIUS_OF_EARTH 6371000 /*meters(m)*/
+#define CONSTANTS_DEG_TO_RAD 0.01745329251994
+
+class PX4Drone
+{
+private:
+
+  //SUbscriber
+      ros::Subscriber state_sub;
+      ros::Subscriber global_vel_sub;
+      ros::Subscriber local_vel_sub;
+      ros::Subscriber global_pos_sub;
+      ros::Subscriber flow_came_sub;
+
+
+public:
+  //Publisher
+      ros::Publisher local_pos_pub;
+      ros::Publisher velocity_pub;
+      ros::Publisher global_pos_pub;
+    //ServiceClient
+      ros::ServiceClient arming_client;
+      ros::ServiceClient set_mode_client;
+      ros::ServiceClient takeoff_client;
+      ros::ServiceClient land_client;
+      mavros_msgs::CommandBool arm_cmd;
+      geometry_msgs::TwistStamped global_vel;
+      geometry_msgs::TwistStamped local_vel;
+      geometry_msgs::TwistStamped global_set_vel;
+
+      sensor_msgs::NavSatFix  global_pos;
+      sensor_msgs::NavSatFix  local_pos;
+      mavros_msgs::State current_state;
+      mavros_msgs::SetMode offb_set_mode;
+      mavros_msgs::OpticalFlowRad optical_flow;
+
+      //Parameter
+      bool task_complete_flag;
+      int  task_update_flag;
+      int  task_flight_mode;
+      float err_x,err_y,err_z;
+      float ctrl_x,ctrl_y,ctrl_z,ctrl_max;
+      float dist_x,dist_y;
+      sensor_msgs::NavSatFix  initial_global_pos;
+      sensor_msgs::NavSatFix ideal_global_pos;
+
+private:
+
+      void cal_distance()
+      {
+        double lat_rad=global_pos.latitude*CONSTANTS_DEG_TO_RAD;
+        double lon_rad=global_pos.longitude*CONSTANTS_DEG_TO_RAD;
+        double ideal_lat_rad=ideal_global_pos.latitude*CONSTANTS_DEG_TO_RAD;
+        double ideal_lon_rad=ideal_global_pos.longitude*CONSTANTS_DEG_TO_RAD;
+
+        double sin_lat=sin(lat_rad);
+        double cos_lat=cos(lat_rad);
+        double sin_ideal_lat=sin(ideal_lat_rad);
+        double cos_ideal_lat=cos(ideal_lat_rad);
+        double cos_d_lon=cos(lon_rad-ideal_lon_rad);
+
+        double arg=sin_ideal_lat*sin_lat+cos_ideal_lat*cos_lat*cos_d_lon;
+        if(arg&gt;1.0)
+        arg=1.0;
+        else if(arg&lt;-1.0)
+        arg=-1.0;
+        double c=acos(arg);
+        double k = (fabs(c) &lt; DBL_EPSILON) ? 1.0 : (c / sin(c));
+
+       dist_y=k*(cos_ideal_lat*sin_lat-sin_ideal_lat*cos_lat*cos_d_lon)*CONSTANTS_RADIUS_OF_EARTH;
+       dist_x=k*cos_lat*sin(lon_rad-ideal_lon_rad)*CONSTANTS_RADIUS_OF_EARTH;
+
+      }
+      void state_callback(const mavros_msgs::State::ConstPtr&amp; msg){
+          this-&gt;current_state = *msg;
+      }
+
+      void global_vel_callback(const geometry_msgs::TwistStamped msg){
+          this-&gt;global_vel = msg;
+      }
+
+      void local_vel_callback(const geometry_msgs::TwistStamped msg){
+          this-&gt;local_vel = msg;
+      }
+
+      void global_pos_callback(const sensor_msgs::NavSatFix msg)
+      {
+        this-&gt;global_pos=msg;
+        this-&gt;cal_distance();
+        this-&gt;err_x=-1.0*this-&gt;dist_x;
+        this-&gt;err_y=-1.0*this-&gt;dist_y;
+        this-&gt;err_z=this-&gt;ideal_global_pos.altitude-this-&gt;global_pos.altitude;
+        this-&gt;ctrl_x=this-&gt;err_x;
+        this-&gt;ctrl_x=((this-&gt;ctrl_x)&lt;(-1.0*ctrl_max)?(-1.0*ctrl_max):(this-&gt;ctrl_x)&gt;ctrl_max?ctrl_max:this-&gt;ctrl_x);
+        this-&gt;ctrl_y=this-&gt;err_y;
+        this-&gt;ctrl_y=((this-&gt;ctrl_y)&lt;(-1.0*ctrl_max)?(-1.0*ctrl_max):(this-&gt;ctrl_y)&gt;ctrl_max?ctrl_max:this-&gt;ctrl_y);
+        this-&gt;ctrl_z=this-&gt;err_z;
+        this-&gt;ctrl_z=((this-&gt;ctrl_z)&lt;(-1.0*ctrl_max)?(-1.0*ctrl_max):(this-&gt;ctrl_z)&gt;ctrl_max?ctrl_max:this-&gt;ctrl_z);
+        if(this-&gt;task_flight_mode==1)
+        {
+          this-&gt;global_set_vel.twist.linear.x=this-&gt;ctrl_x;
+          this-&gt;global_set_vel.twist.linear.y=this-&gt;ctrl_y;
+          this-&gt;global_set_vel.twist.linear.z=this-&gt;ctrl_z;
+          std::cout&lt;&lt;&quot;The control value x and y and z is: &quot;&lt;&lt;this-&gt;ctrl_x
+                   &lt;&lt;&quot; and &quot;&lt;&lt;this-&gt;ctrl_y
+                   &lt;&lt;&quot; and &quot;&lt;&lt;this-&gt;ctrl_z&lt;&lt;std::endl;
+          if(fabs(this-&gt;ctrl_z)&lt;0.2)
+          {
+            if(!this-&gt;task_complete_flag)
+            {
+                this-&gt;task_update_flag++;
+                this-&gt;task_complete_flag=1;
+                this-&gt;task_flight_mode++;
+            }
+
+          }
+        }
+
+      }
+
+
+      void flow_came_callback(const mavros_msgs::OpticalFlowRad msg)
+      {
+          this-&gt;optical_flow = msg;
+
+          if(this-&gt;task_flight_mode==2&amp;&amp;this-&gt;optical_flow.distance&gt;3.0)
+          {
+            if(!this-&gt;task_complete_flag)
+            {
+                this-&gt;task_update_flag++;
+                this-&gt;task_complete_flag=1;
+                this-&gt;task_flight_mode++;
+            }
+
+          }
+
+
+          if(this-&gt;task_flight_mode==3&amp;&amp;this-&gt;optical_flow.distance&lt;3.0)
+          {
+            if(!this-&gt;task_complete_flag)
+            {
+                this-&gt;task_update_flag++;
+                this-&gt;task_complete_flag=1;
+                this-&gt;task_flight_mode++;
+            }
+
+          }
+
+
+          if(this-&gt;task_flight_mode==2)
+          {
+          this-&gt;global_set_vel.twist.linear.x=0;
+          this-&gt;global_set_vel.twist.linear.y=-0.3;
+          this-&gt;global_set_vel.twist.linear.z=this-&gt;ctrl_z;
+        }
+
+        if(this-&gt;task_flight_mode==3)
+        {
+        this-&gt;global_set_vel.twist.linear.x=0.3;
+        this-&gt;global_set_vel.twist.linear.y=-0.08;
+        this-&gt;global_set_vel.twist.linear.z=this-&gt;ctrl_z;
+      }
+
+      if(this-&gt;task_flight_mode==4)
+      {
+      this-&gt;global_set_vel.twist.linear.x=0;
+      this-&gt;global_set_vel.twist.linear.y=0;
+      this-&gt;global_set_vel.twist.linear.z=this-&gt;ctrl_z;
+    }
+
+      }
+
+
+public:
+
+       PX4Drone(ros::NodeHandle&amp; nh)
+       {
+         state_sub = nh.subscribe&lt;mavros_msgs::State&gt;
+                 (&quot;mavros/state&quot;, 10, &amp;PX4Drone::state_callback,this);
+        global_vel_sub = nh.subscribe&lt;geometry_msgs::TwistStamped&gt;
+                         (&quot;mavros/global_position/raw/gp_vel&quot;, 10, &amp;PX4Drone::global_vel_callback,this);
+        flow_came_sub = nh.subscribe&lt;mavros_msgs::OpticalFlowRad&gt;
+                          (&quot;mavros/px4flow/raw/optical_flow_rad&quot;, 10, &amp;PX4Drone::flow_came_callback,this);
+          local_vel_sub = nh.subscribe&lt;geometry_msgs::TwistStamped&gt;
+                         (&quot;mavros/local_position/velocity&quot;, 10, &amp;PX4Drone::local_vel_callback,this);
+         global_pos_sub = nh.subscribe&lt;sensor_msgs::NavSatFix&gt;
+                         (&quot;mavros/global_position/global&quot;, 10, &amp;PX4Drone::global_pos_callback,this);
+         local_pos_pub = nh.advertise&lt;geometry_msgs::PoseStamped&gt;
+                 (&quot;mavros/setpoint_position/local&quot;, 10);
+         global_pos_pub=nh.advertise&lt;mavros_msgs::GlobalPositionTarget&gt;
+                  (&quot;mavros/setpoint_raw/global&quot;,10);
+          velocity_pub = nh.advertise&lt;geometry_msgs::TwistStamped&gt;
+                  (&quot;mavros/setpoint_velocity/cmd_vel&quot;, 10);
+          arming_client = nh.serviceClient&lt;mavros_msgs::CommandBool&gt;
+                 (&quot;mavros/cmd/arming&quot;);
+          set_mode_client = nh.serviceClient&lt;mavros_msgs::SetMode&gt;
+                 (&quot;mavros/set_mode&quot;);
+          takeoff_client=nh.serviceClient&lt;mavros_msgs::CommandTOL&gt;
+                 (&quot;mavros/cmd/takeoff&quot;);
+          land_client=nh.serviceClient&lt;mavros_msgs::CommandTOL&gt;
+                        (&quot;mavros/cmd/land&quot;);
+
+          //Parameter init
+
+          task_complete_flag=1;
+          task_flight_mode=0;
+          task_update_flag=0;
+          ctrl_max=0.3;
+
+       }
+       bool takeoff()
+       {
+         mavros_msgs::CommandTOL drone_commandtol;
+         drone_commandtol.request.min_pitch=0;
+         drone_commandtol.request.latitude=this-&gt;global_pos.latitude;
+         drone_commandtol.request.longitude=this-&gt;global_pos.longitude;
+         drone_commandtol.request.yaw=0;
+         std::cout&lt;&lt;&quot;Latitude: &quot;&lt;&lt;this-&gt;global_pos.latitude&lt;&lt;std::endl;
+         std::cout&lt;&lt;&quot;Longitude: &quot;&lt;&lt;this-&gt;global_pos.longitude&lt;&lt;std::endl;
+         drone_commandtol.request.altitude=this-&gt;global_pos.altitude+3.0;
+         std::cout&lt;&lt;&quot;Altitude: : &quot;&lt;&lt;drone_commandtol.request.altitude&lt;&lt;std::endl;
+         return takeoff_client.call(drone_commandtol)&amp;&amp;drone_commandtol.response.success;
+       }
+       bool land()
+       {
+         mavros_msgs::CommandTOL drone_commandtol;
+         return land_client.call(drone_commandtol)&amp;&amp;drone_commandtol.response.success;
+       }
+};
+</code></pre>
+      
+    </div>
+
+    <div>
+      
+        
+
+      
+    </div>
+
+    <div>
+      
+        
+
+      
+    </div>
+
+    <div>
+      
+        
+
+      
+    </div>
+
+    <footer class="post-footer">
+      
+        <div class="post-tags">
+          
+            <a href="/tags/PX4/" rel="tag"># PX4</a>
+          
+            <a href="/tags/Gazebo/" rel="tag"># Gazebo</a>
+          
+        </div>
+      
+
+      
+        
+      
+
+      
+        <div class="post-nav">
+          <div class="post-nav-next post-nav-item">
+            
+              <a href="/2016/05/11/下料问题的求解/" rel="next" title="二维矩形下料问题的求解">
+                <i class="fa fa-chevron-left"></i> 二维矩形下料问题的求解
+              </a>
+            
+          </div>
+
+          <span class="post-nav-divider"></span>
+
+          <div class="post-nav-prev post-nav-item">
+            
+              <a href="/2017/01/18/GroundStation/" rel="prev" title="多四旋翼地面站的搭建">
+                多四旋翼地面站的搭建 <i class="fa fa-chevron-right"></i>
+              </a>
+            
+          </div>
+        </div>
+      
+
+      
+      
+    </footer>
+  </article>
+
+
+
+    <div class="post-spread">
+      
+    </div>
+  </div>
+
+
+          </div>
+          
+
+
+          
+  <div class="comments" id="comments">
+    
+  </div>
+
+
+        </div>
+        
+          
+  
+  <div class="sidebar-toggle">
+    <div class="sidebar-toggle-line-wrap">
+      <span class="sidebar-toggle-line sidebar-toggle-line-first"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-middle"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-last"></span>
+    </div>
+  </div>
+
+  <aside id="sidebar" class="sidebar">
+    <div class="sidebar-inner">
+
+      
+
+      
+
+      <section class="site-overview sidebar-panel sidebar-panel-active">
+        <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+          <img class="site-author-image" itemprop="image"
+               src="/uploads/avatar.jpg"
+               alt="Guo Xiaodong" />
+          <p class="site-author-name" itemprop="name">Guo Xiaodong</p>
+           
+              <p class="site-description motion-element" itemprop="description"></p>
+          
+        </div>
+        <nav class="site-state motion-element">
+
+          
+            <div class="site-state-item site-state-posts">
+              <a href="/archives">
+                <span class="site-state-item-count">6</span>
+                <span class="site-state-item-name">日志</span>
+              </a>
+            </div>
+          
+
+          
+            
+            
+            <div class="site-state-item site-state-categories">
+              
+                <span class="site-state-item-count">4</span>
+                <span class="site-state-item-name">分类</span>
+              
+            </div>
+          
+
+          
+            
+            
+            <div class="site-state-item site-state-tags">
+              
+                <span class="site-state-item-count">11</span>
+                <span class="site-state-item-name">标签</span>
+              
+            </div>
+          
+
+        </nav>
+
+        
+
+        <div class="links-of-author motion-element">
+          
+        </div>
+
+        
+        
+
+        
+        
+
+        
+
+
+      </section>
+
+      
+
+      
+
+    </div>
+  </aside>
+
+
+        
+      </div>
+    </main>
+
+    <footer id="footer" class="footer">
+      <div class="footer-inner">
+        <div class="copyright" >
+  
+  &copy; 
+  <span itemprop="copyrightYear">2017</span>
+  <span class="with-love">
+    <i class="fa fa-heart"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">Guo Xiaodong</span>
+</div>
+
+
+<div class="powered-by">
+  由 <a class="theme-link" href="https://hexo.io">Hexo</a> 强力驱动
+</div>
+
+<div class="theme-info">
+  主题 -
+  <a class="theme-link" href="https://github.com/iissnan/hexo-theme-next">
+    NexT.Pisces
+  </a>
+</div>
+
+
+        
+
+        
+      </div>
+    </footer>
+
+    
+      <div class="back-to-top">
+        <i class="fa fa-arrow-up"></i>
+        
+      </div>
+    
+
+  </div>
+
+  
+
+<script type="text/javascript">
+  if (Object.prototype.toString.call(window.Promise) !== '[object Function]') {
+    window.Promise = null;
+  }
+</script>
+
+
+
+
+
+
+
+
+
+  
+
+
+
+
+
+
+
+
+
+
+
+
+  
+  <script type="text/javascript" src="/lib/jquery/index.js?v=2.1.3"></script>
+
+  
+  <script type="text/javascript" src="/lib/fastclick/lib/fastclick.min.js?v=1.0.6"></script>
+
+  
+  <script type="text/javascript" src="/lib/jquery_lazyload/jquery.lazyload.js?v=1.9.7"></script>
+
+  
+  <script type="text/javascript" src="/lib/velocity/velocity.min.js?v=1.2.1"></script>
+
+  
+  <script type="text/javascript" src="/lib/velocity/velocity.ui.min.js?v=1.2.1"></script>
+
+  
+  <script type="text/javascript" src="/lib/fancybox/source/jquery.fancybox.pack.js?v=2.1.5"></script>
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/utils.js?v=5.1.1"></script>
+
+  <script type="text/javascript" src="/js/src/motion.js?v=5.1.1"></script>
+
+
+
+  
+  
+
+
+  <script type="text/javascript" src="/js/src/affix.js?v=5.1.1"></script>
+
+  <script type="text/javascript" src="/js/src/schemes/pisces.js?v=5.1.1"></script>
+
+
+
+  
+  <script type="text/javascript" src="/js/src/scrollspy.js?v=5.1.1"></script>
+<script type="text/javascript" src="/js/src/post-details.js?v=5.1.1"></script>
+
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/bootstrap.js?v=5.1.1"></script>
+
+
+
+  
+
+
+  
+
+
+
+
+	
+
+
+
+
+
+  
+
+
+
+
+
+  
+
+
+
+
+
+  
+
+
+
+
+
+
+  
+
+
+
+
+
+  
+
+  
+
+  
+
+  
+
+  
+
+</body>
+</html>

@@ -1,0 +1,701 @@
+<!doctype html>
+
+
+
+  
+
+
+<html class="theme-next pisces use-motion" lang="zh-Hans">
+<head>
+  <meta charset="UTF-8"/>
+<meta http-equiv="X-UA-Compatible" content="IE=edge" />
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1"/>
+
+
+
+
+
+
+<meta http-equiv="Cache-Control" content="no-transform" />
+<meta http-equiv="Cache-Control" content="no-siteapp" />
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+  
+  <link href="/lib/fancybox/source/jquery.fancybox.css?v=2.1.5" rel="stylesheet" type="text/css" />
+
+
+
+
+  
+  
+  
+  
+
+  
+    
+    
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+    
+    
+    <link href="//fonts.googleapis.com/css?family=Lato:300,300italic,400,400italic,700,700italic&subset=latin,latin-ext" rel="stylesheet" type="text/css">
+  
+
+
+
+
+
+
+<link href="/lib/font-awesome/css/font-awesome.min.css?v=4.6.2" rel="stylesheet" type="text/css" />
+
+<link href="/css/main.css?v=5.1.1" rel="stylesheet" type="text/css" />
+
+
+  <meta name="keywords" content="地面站,Qt," />
+
+
+
+
+
+
+
+
+  <link rel="shortcut icon" type="image/x-icon" href="/favicon.ico?v=5.1.1" />
+
+
+
+
+
+
+<meta name="description" content="上个月干了两件事，一个是搭建了一个多旋翼无人机的地面站，另外就是对DJI Guidance视觉导航设备在M100飞行平台上做了测试。这里说一说多四旋翼地面站的搭建。在控制单架四旋翼的时候，我们一般采用ssh远程登录机载电脑来运行程序。但是对于多个四旋翼这样太费事。而且除了远程控制，也有更多的人机交互需要，因此需要一个地面站实现这样的功能。 在一开始，想采用HTML+JavaScript来搭建地面的">
+<meta name="keywords" content="地面站,Qt">
+<meta property="og:type" content="article">
+<meta property="og:title" content="多四旋翼地面站的搭建">
+<meta property="og:url" content="http://yoursite.com/2017/01/18/GroundStation/index.html">
+<meta property="og:site_name" content="Guo Xiaodong&#39;s Blog">
+<meta property="og:description" content="上个月干了两件事，一个是搭建了一个多旋翼无人机的地面站，另外就是对DJI Guidance视觉导航设备在M100飞行平台上做了测试。这里说一说多四旋翼地面站的搭建。在控制单架四旋翼的时候，我们一般采用ssh远程登录机载电脑来运行程序。但是对于多个四旋翼这样太费事。而且除了远程控制，也有更多的人机交互需要，因此需要一个地面站实现这样的功能。 在一开始，想采用HTML+JavaScript来搭建地面的">
+<meta property="og:image" content="http://7xt5o8.com2.z0.glb.clouddn.com/18.png">
+<meta property="og:image" content="http://7xt5o8.com2.z0.glb.clouddn.com/19.png">
+<meta property="og:image" content="http://7xt5o8.com2.z0.glb.clouddn.com/20.png">
+<meta property="og:updated_time" content="2017-05-05T09:07:24.346Z">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="多四旋翼地面站的搭建">
+<meta name="twitter:description" content="上个月干了两件事，一个是搭建了一个多旋翼无人机的地面站，另外就是对DJI Guidance视觉导航设备在M100飞行平台上做了测试。这里说一说多四旋翼地面站的搭建。在控制单架四旋翼的时候，我们一般采用ssh远程登录机载电脑来运行程序。但是对于多个四旋翼这样太费事。而且除了远程控制，也有更多的人机交互需要，因此需要一个地面站实现这样的功能。 在一开始，想采用HTML+JavaScript来搭建地面的">
+<meta name="twitter:image" content="http://7xt5o8.com2.z0.glb.clouddn.com/18.png">
+
+
+
+<script type="text/javascript" id="hexo.configurations">
+  var NexT = window.NexT || {};
+  var CONFIG = {
+    root: '/',
+    scheme: 'Pisces',
+    sidebar: {"position":"left","display":"post","offset":12,"offset_float":0,"b2t":false,"scrollpercent":false},
+    fancybox: true,
+    motion: true,
+    duoshuo: {
+      userId: '0',
+      author: '博主'
+    },
+    algolia: {
+      applicationID: '',
+      apiKey: '',
+      indexName: '',
+      hits: {"per_page":10},
+      labels: {"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}
+    }
+  };
+</script>
+
+
+
+  <link rel="canonical" href="http://yoursite.com/2017/01/18/GroundStation/"/>
+
+
+
+
+
+  <title>多四旋翼地面站的搭建 | Guo Xiaodong's Blog</title>
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage" lang="zh-Hans">
+
+  
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+  
+    
+  
+
+  <div class="container sidebar-position-left page-post-detail ">
+    <div class="headband"></div>
+
+    <header id="header" class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-wrapper">
+  <div class="site-meta ">
+    
+
+    <div class="custom-logo-site-title">
+      <a href="/"  class="brand" rel="start">
+        <span class="logo-line-before"><i></i></span>
+        <span class="site-title">Guo Xiaodong's Blog</span>
+        <span class="logo-line-after"><i></i></span>
+      </a>
+    </div>
+      
+        <p class="site-subtitle">A Record of Study and Journey</p>
+      
+  </div>
+
+  <div class="site-nav-toggle">
+    <button>
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+    </button>
+  </div>
+</div>
+
+<nav class="site-nav">
+  
+
+  
+    <ul id="menu" class="menu">
+      
+        
+        <li class="menu-item menu-item-home">
+          <a href="/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-home"></i> <br />
+            
+            首页
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-archives">
+          <a href="/archives" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-archive"></i> <br />
+            
+            归档
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-tags">
+          <a href="/tags" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-tags"></i> <br />
+            
+            标签
+          </a>
+        </li>
+      
+
+      
+    </ul>
+  
+
+  
+</nav>
+
+
+
+ </div>
+    </header>
+
+    <main id="main" class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          <div id="content" class="content">
+            
+
+  <div id="posts" class="posts-expand">
+    
+
+  
+
+  
+  
+  
+
+  <article class="post post-type-normal " itemscope itemtype="http://schema.org/Article">
+    <link itemprop="mainEntityOfPage" href="http://yoursite.com/2017/01/18/GroundStation/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="Guo Xiaodong">
+      <meta itemprop="description" content="">
+      <meta itemprop="image" content="/uploads/avatar.jpg">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="Guo Xiaodong's Blog">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">多四旋翼地面站的搭建</h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">发表于</span>
+              
+              <time title="创建于" itemprop="dateCreated datePublished" datetime="2017-01-18T20:14:48+08:00">
+                2017-01-18
+              </time>
+            
+
+            
+
+            
+          </span>
+
+          
+            <span class="post-category" >
+            
+              <span class="post-meta-divider">|</span>
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">分类于</span>
+              
+              
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/四旋翼/" itemprop="url" rel="index">
+                    <span itemprop="name">四旋翼</span>
+                  </a>
+                </span>
+
+                
+                
+              
+            </span>
+          
+
+          
+            
+          
+
+          
+          
+
+          
+
+          
+
+          
+
+        </div>
+      </header>
+    
+
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        <p>上个月干了两件事，一个是搭建了一个多旋翼无人机的地面站，另外就是对DJI Guidance视觉导航设备在M100飞行平台上做了测试。这里说一说多四旋翼地面站的搭建。在控制单架四旋翼的时候，我们一般采用ssh远程登录机载电脑来运行程序。但是对于多个四旋翼这样太费事。而且除了远程控制，也有更多的人机交互需要，因此需要一个地面站实现这样的功能。</p>
+<p>在一开始，想采用HTML+JavaScript来搭建地面的控制端。浙江大学的沈洪梁[1]曾经采用过这种方案。该方案的好处在于ROS提供了一个rosbridge_suite的程序包，将web中的HTTP请求转换成ROS中的topic和service进行数据交互。对于像我们这种基于ROS系统进行控制的平台是非常方便的。但是，这种方案的缺点在于通信距离的限制。如果采用普通的路由器实现地面站和四旋翼之间的通信，通信距离的尺度是百米，这对于户外远距离飞行的四旋翼来说是不可以接受的。因此选择了在Linux下用Qt搭建的方案。这种方案方便我们采用通信距离为1.6km的Zigbee模块进行通信。同时Qt支持跨平台编译，支持地面站在多系统平台上的使用。</p>
+<p>我们归纳了地面站应该具有的功能，主要有以下几点：1) 地图，飞行轨迹和四旋翼飞行数据的显示；2）远程控制指令的发送； 3）初始的任务设定； 4）参数(多四旋翼编队队形等)初始化。</p>
+<p>地面站主要包含了三个界面。多界面采用Qt中的QStackWidget来实现，而多界面的索引采用QListWidget来实现。下图显示的是地面站的主界面。最左边是多界面的索引。上半部分是地图和飞机位置的显示。采用的是百度地图的API。很遗憾，Google Earth在2015年底停止支持API开发。之前看到电子科大的钱杰[2]用Google Earth的API开发的地面站3D显示的效果非常棒。而其他的地图很少有支持3D显示的，像百度地图只能支持少数地区的3D显示，而我所在的学校不在其中。左下部分是操作指令按钮，起飞呀，返航呀，降落呀等等。右下部分是信息显示台，地面站发送指令或者收到四旋翼的应答消息都会显示在这个窗口上。这些在Qt中都是通过信号-槽机制来实现的。<br><img src="http://7xt5o8.com2.z0.glb.clouddn.com/18.png" alt="主界面"></p>
+<p>第二个界面是任务和队形规划界面。现在的任务规划形式比较简单，没有附带的数据，只有任务的描述，如：监测，悬停，盘旋等等。这个需要根据实际的飞行任务进行调整。至于队形规划，采用发送从机相对头机位置差的形式给四旋翼机群。从左到右三个数据分别是头机的ID，从机的ID（可以下拉框选择），以及它们X,Y,Z方向上位置差的设定值。<br><img src="http://7xt5o8.com2.z0.glb.clouddn.com/19.png" alt="任务和队形设定界面"></p>
+<p>第三个界面是四旋翼飞行信息的显示界面。包括位置，速度，偏航角。现在这个显示方式比较粗糙，在之后需要用图形化的方式把机群的位置信息表示出来，对于单机的飞行信息（如偏航角）也应该采用图形化的方式。<br><img src="http://7xt5o8.com2.z0.glb.clouddn.com/20.png" alt="飞行信息显示界面"></p>
+<p><em>参考文献</em><br><em>[1]沈洪梁. 单/多四旋翼无人机系统平台的设计及若干应用的研究[D]. 浙江大学, 2016.</em><br><em>[2]钱杰. 四旋翼飞行器整体设计与航迹跟踪地面站软件设计[D]. 电子科技大学，2015.</em></p>
+
+      
+    </div>
+
+    <div>
+      
+        
+
+      
+    </div>
+
+    <div>
+      
+        
+
+      
+    </div>
+
+    <div>
+      
+        
+
+      
+    </div>
+
+    <footer class="post-footer">
+      
+        <div class="post-tags">
+          
+            <a href="/tags/地面站/" rel="tag"># 地面站</a>
+          
+            <a href="/tags/Qt/" rel="tag"># Qt</a>
+          
+        </div>
+      
+
+      
+        
+      
+
+      
+        <div class="post-nav">
+          <div class="post-nav-next post-nav-item">
+            
+              <a href="/2016/09/13/GAZEBO/" rel="next" title="基于PX4和Gazebo的飞行仿真">
+                <i class="fa fa-chevron-left"></i> 基于PX4和Gazebo的飞行仿真
+              </a>
+            
+          </div>
+
+          <span class="post-nav-divider"></span>
+
+          <div class="post-nav-prev post-nav-item">
+            
+              <a href="/2017/02/14/Iterator/" rel="prev" title="遍历容器的几种方式">
+                遍历容器的几种方式 <i class="fa fa-chevron-right"></i>
+              </a>
+            
+          </div>
+        </div>
+      
+
+      
+      
+    </footer>
+  </article>
+
+
+
+    <div class="post-spread">
+      
+    </div>
+  </div>
+
+
+          </div>
+          
+
+
+          
+  <div class="comments" id="comments">
+    
+  </div>
+
+
+        </div>
+        
+          
+  
+  <div class="sidebar-toggle">
+    <div class="sidebar-toggle-line-wrap">
+      <span class="sidebar-toggle-line sidebar-toggle-line-first"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-middle"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-last"></span>
+    </div>
+  </div>
+
+  <aside id="sidebar" class="sidebar">
+    <div class="sidebar-inner">
+
+      
+
+      
+
+      <section class="site-overview sidebar-panel sidebar-panel-active">
+        <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+          <img class="site-author-image" itemprop="image"
+               src="/uploads/avatar.jpg"
+               alt="Guo Xiaodong" />
+          <p class="site-author-name" itemprop="name">Guo Xiaodong</p>
+           
+              <p class="site-description motion-element" itemprop="description"></p>
+          
+        </div>
+        <nav class="site-state motion-element">
+
+          
+            <div class="site-state-item site-state-posts">
+              <a href="/archives">
+                <span class="site-state-item-count">6</span>
+                <span class="site-state-item-name">日志</span>
+              </a>
+            </div>
+          
+
+          
+            
+            
+            <div class="site-state-item site-state-categories">
+              
+                <span class="site-state-item-count">4</span>
+                <span class="site-state-item-name">分类</span>
+              
+            </div>
+          
+
+          
+            
+            
+            <div class="site-state-item site-state-tags">
+              
+                <span class="site-state-item-count">11</span>
+                <span class="site-state-item-name">标签</span>
+              
+            </div>
+          
+
+        </nav>
+
+        
+
+        <div class="links-of-author motion-element">
+          
+        </div>
+
+        
+        
+
+        
+        
+
+        
+
+
+      </section>
+
+      
+
+      
+
+    </div>
+  </aside>
+
+
+        
+      </div>
+    </main>
+
+    <footer id="footer" class="footer">
+      <div class="footer-inner">
+        <div class="copyright" >
+  
+  &copy; 
+  <span itemprop="copyrightYear">2017</span>
+  <span class="with-love">
+    <i class="fa fa-heart"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">Guo Xiaodong</span>
+</div>
+
+
+<div class="powered-by">
+  由 <a class="theme-link" href="https://hexo.io">Hexo</a> 强力驱动
+</div>
+
+<div class="theme-info">
+  主题 -
+  <a class="theme-link" href="https://github.com/iissnan/hexo-theme-next">
+    NexT.Pisces
+  </a>
+</div>
+
+
+        
+
+        
+      </div>
+    </footer>
+
+    
+      <div class="back-to-top">
+        <i class="fa fa-arrow-up"></i>
+        
+      </div>
+    
+
+  </div>
+
+  
+
+<script type="text/javascript">
+  if (Object.prototype.toString.call(window.Promise) !== '[object Function]') {
+    window.Promise = null;
+  }
+</script>
+
+
+
+
+
+
+
+
+
+  
+
+
+
+
+
+
+
+
+
+
+
+
+  
+  <script type="text/javascript" src="/lib/jquery/index.js?v=2.1.3"></script>
+
+  
+  <script type="text/javascript" src="/lib/fastclick/lib/fastclick.min.js?v=1.0.6"></script>
+
+  
+  <script type="text/javascript" src="/lib/jquery_lazyload/jquery.lazyload.js?v=1.9.7"></script>
+
+  
+  <script type="text/javascript" src="/lib/velocity/velocity.min.js?v=1.2.1"></script>
+
+  
+  <script type="text/javascript" src="/lib/velocity/velocity.ui.min.js?v=1.2.1"></script>
+
+  
+  <script type="text/javascript" src="/lib/fancybox/source/jquery.fancybox.pack.js?v=2.1.5"></script>
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/utils.js?v=5.1.1"></script>
+
+  <script type="text/javascript" src="/js/src/motion.js?v=5.1.1"></script>
+
+
+
+  
+  
+
+
+  <script type="text/javascript" src="/js/src/affix.js?v=5.1.1"></script>
+
+  <script type="text/javascript" src="/js/src/schemes/pisces.js?v=5.1.1"></script>
+
+
+
+  
+  <script type="text/javascript" src="/js/src/scrollspy.js?v=5.1.1"></script>
+<script type="text/javascript" src="/js/src/post-details.js?v=5.1.1"></script>
+
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/bootstrap.js?v=5.1.1"></script>
+
+
+
+  
+
+
+  
+
+
+
+
+	
+
+
+
+
+
+  
+
+
+
+
+
+  
+
+
+
+
+
+  
+
+
+
+
+
+
+  
+
+
+
+
+
+  
+
+  
+
+  
+
+  
+
+  
+
+</body>
+</html>
