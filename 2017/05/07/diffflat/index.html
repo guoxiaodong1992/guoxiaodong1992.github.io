@@ -1,0 +1,766 @@
+<!doctype html>
+
+
+
+  
+
+
+<html class="theme-next pisces use-motion" lang="zh-Hans">
+<head>
+  <!-- hexo-inject:begin --><!-- hexo-inject:end --><meta charset="UTF-8"/>
+<meta http-equiv="X-UA-Compatible" content="IE=edge" />
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1"/>
+
+
+
+
+
+
+<meta http-equiv="Cache-Control" content="no-transform" />
+<meta http-equiv="Cache-Control" content="no-siteapp" />
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+  
+  <link href="/lib/fancybox/source/jquery.fancybox.css?v=2.1.5" rel="stylesheet" type="text/css" />
+
+
+
+
+  
+  
+  
+  
+
+  
+    
+    
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+    
+    
+    <link href="//fonts.googleapis.com/css?family=Lato:300,300italic,400,400italic,700,700italic&subset=latin,latin-ext" rel="stylesheet" type="text/css">
+  
+
+
+
+
+
+
+<link href="/lib/font-awesome/css/font-awesome.min.css?v=4.6.2" rel="stylesheet" type="text/css" />
+
+<link href="/css/main.css?v=5.1.1" rel="stylesheet" type="text/css" />
+
+
+  <meta name="keywords" content="轨迹规划,微分平滑," />
+
+
+
+
+
+
+
+
+  <link rel="shortcut icon" type="image/x-icon" href="/favicon.ico?v=5.1.1" />
+
+
+
+
+
+
+<meta name="description" content="对于轨迹规划问题,为了使生成的轨迹能够被良好地执行, 考虑轨迹执行器的动力学模型是必要的.而对于四旋翼来说, 微分平滑性是一个非常重要的动力学特性. 相当于在轨迹曲线和系统的状态和控制输入之间架起了一个桥梁,使得我们可以通过轨迹参数就可以分析四旋翼的状态和控制输入性质. 从而使求解满足运动学和动力学约束的最优轨迹成为可能. Kumar 实验室的 Daniel Warren Mellinger 在其">
+<meta name="keywords" content="轨迹规划,微分平滑">
+<meta property="og:type" content="article">
+<meta property="og:title" content="四旋翼轨迹规划(1):微分平滑">
+<meta property="og:url" content="http://yoursite.com/2017/05/07/diffflat/index.html">
+<meta property="og:site_name" content="Guo Xiaodong&#39;s Blog">
+<meta property="og:description" content="对于轨迹规划问题,为了使生成的轨迹能够被良好地执行, 考虑轨迹执行器的动力学模型是必要的.而对于四旋翼来说, 微分平滑性是一个非常重要的动力学特性. 相当于在轨迹曲线和系统的状态和控制输入之间架起了一个桥梁,使得我们可以通过轨迹参数就可以分析四旋翼的状态和控制输入性质. 从而使求解满足运动学和动力学约束的最优轨迹成为可能. Kumar 实验室的 Daniel Warren Mellinger 在其">
+<meta property="og:image" content="http://yoursite.com/2017/05/07/diffflat/figure1.png">
+<meta property="og:updated_time" content="2017-05-07T17:16:48.316Z">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="四旋翼轨迹规划(1):微分平滑">
+<meta name="twitter:description" content="对于轨迹规划问题,为了使生成的轨迹能够被良好地执行, 考虑轨迹执行器的动力学模型是必要的.而对于四旋翼来说, 微分平滑性是一个非常重要的动力学特性. 相当于在轨迹曲线和系统的状态和控制输入之间架起了一个桥梁,使得我们可以通过轨迹参数就可以分析四旋翼的状态和控制输入性质. 从而使求解满足运动学和动力学约束的最优轨迹成为可能. Kumar 实验室的 Daniel Warren Mellinger 在其">
+<meta name="twitter:image" content="http://yoursite.com/2017/05/07/diffflat/figure1.png">
+
+
+
+<script type="text/javascript" id="hexo.configurations">
+  var NexT = window.NexT || {};
+  var CONFIG = {
+    root: '/',
+    scheme: 'Pisces',
+    sidebar: {"position":"left","display":"post","offset":12,"offset_float":0,"b2t":false,"scrollpercent":false},
+    fancybox: true,
+    motion: true,
+    duoshuo: {
+      userId: '0',
+      author: '博主'
+    },
+    algolia: {
+      applicationID: '',
+      apiKey: '',
+      indexName: '',
+      hits: {"per_page":10},
+      labels: {"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}
+    }
+  };
+</script>
+
+
+
+  <link rel="canonical" href="http://yoursite.com/2017/05/07/diffflat/"/>
+
+
+
+
+
+  <title>四旋翼轨迹规划(1):微分平滑 | Guo Xiaodong's Blog</title><!-- hexo-inject:begin --><!-- hexo-inject:end -->
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage" lang="zh-Hans">
+
+  
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+  
+    
+  
+
+  <!-- hexo-inject:begin --><!-- hexo-inject:end --><div class="container sidebar-position-left page-post-detail ">
+    <div class="headband"></div>
+
+    <header id="header" class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-wrapper">
+  <div class="site-meta ">
+    
+
+    <div class="custom-logo-site-title">
+      <a href="/"  class="brand" rel="start">
+        <span class="logo-line-before"><i></i></span>
+        <span class="site-title">Guo Xiaodong's Blog</span>
+        <span class="logo-line-after"><i></i></span>
+      </a>
+    </div>
+      
+        <p class="site-subtitle">A Record of Study and Journey</p>
+      
+  </div>
+
+  <div class="site-nav-toggle">
+    <button>
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+    </button>
+  </div>
+</div>
+
+<nav class="site-nav">
+  
+
+  
+    <ul id="menu" class="menu">
+      
+        
+        <li class="menu-item menu-item-home">
+          <a href="/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-home"></i> <br />
+            
+            首页
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-archives">
+          <a href="/archives" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-archive"></i> <br />
+            
+            归档
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-tags">
+          <a href="/tags" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-tags"></i> <br />
+            
+            标签
+          </a>
+        </li>
+      
+
+      
+    </ul>
+  
+
+  
+</nav>
+
+
+
+ </div>
+    </header>
+
+    <main id="main" class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          <div id="content" class="content">
+            
+
+  <div id="posts" class="posts-expand">
+    
+
+  
+
+  
+  
+  
+
+  <article class="post post-type-normal " itemscope itemtype="http://schema.org/Article">
+    <link itemprop="mainEntityOfPage" href="http://yoursite.com/2017/05/07/diffflat/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="Guo Xiaodong">
+      <meta itemprop="description" content="">
+      <meta itemprop="image" content="/uploads/avatar.jpg">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="Guo Xiaodong's Blog">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">四旋翼轨迹规划(1):微分平滑</h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">发表于</span>
+              
+              <time title="创建于" itemprop="dateCreated datePublished" datetime="2017-05-07T11:43:12+08:00">
+                2017-05-07
+              </time>
+            
+
+            
+
+            
+          </span>
+
+          
+            <span class="post-category" >
+            
+              <span class="post-meta-divider">|</span>
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">分类于</span>
+              
+              
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/四旋翼/" itemprop="url" rel="index">
+                    <span itemprop="name">四旋翼</span>
+                  </a>
+                </span>
+
+                
+                
+              
+            </span>
+          
+
+          
+            
+          
+
+          
+          
+
+          
+
+          
+
+          
+
+        </div>
+      </header>
+    
+
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        <p>对于轨迹规划问题,为了使生成的轨迹能够被良好地执行, 考虑轨迹执行器的动力学模型是必要的.而对于四旋翼来说, 微分平滑性是一个非常重要的动力学特性. 相当于在轨迹曲线和系统的状态和控制输入之间架起了一个桥梁,使得我们可以通过轨迹参数就可以分析四旋翼的状态和控制输入性质. 从而使求解满足运动学和动力学约束的最优轨迹成为可能. <em>Kumar</em> 实验室的 <em>Daniel Warren Mellinger</em> 在其博士论文 <em>Trajectory Generation and Control for Quadrotors</em> 对四旋翼的微分平滑性有过精彩的阐述. 这篇文章也参考了其中的内容.</p>
+<h2 id="状态和轨迹定义"><a href="#状态和轨迹定义" class="headerlink" title="状态和轨迹定义"></a>状态和轨迹定义</h2><p>四旋翼的坐标系如下图所示. 包括世界坐标系$W$和机体坐标系$B$.<br><img src="/2017/05/07/diffflat/figure1.png" alt=""><br>机体的角速度$\omega_{BW}$可表示为:<br>\begin{equation}\label{eq1}<br>\omega_{BW}=p\mathbf{x}_B+q\mathbf{y}_B+r\mathbf{z}_B;<br>\end{equation}<br>四旋翼的状态是一个12维的向量,包括平动位置和速度,以及欧拉角和机体坐标系下的角速度. 其状态空间可表示为:<br>$$<br>X=[x,y,z,\phi,\theta,\psi,\dot{x},\dot{y},\dot{z},p,q,r]^T<br>$$<br>控制向量为:<br>\begin{equation}<br>u=\left[\begin{array}{c}<br>    u_1 \\\\<br>    u_2 \\\\<br>    u_3 \\\\<br>    u_4<br>  \end{array}\right]<br>  =\left[\begin{array}{c}<br>     F_1+F_2+F_3+F_4 \\\\<br>     F_2D-F_4D \\\\<br>     -F_1D+F_3D \\\\<br>     M_1-M_2+M_3-M_4<br>   \end{array}\right]<br>\end{equation}<br>其中,$F_i=K_F\omega_i^2$ 是旋翼$i$产生的沿机体坐标系垂直向上的推力. $M_i=K_M\omega_i^2$ 是旋翼$i$产生的扭矩. $D$是单个机臂的长度.<br>定义轨迹上一点的状态为:<br>$$<br>\sigma=[x,y,z,\psi]^T<br>$$<br>其中, $x,y,z$ 是机体中心在世界坐标系下的坐标. $\psi$ 是机体的偏航角. 因此, 轨迹曲线$\sigma(t)$可以被定义为:<br>\begin{equation}<br>\sigma(t): [t_0,t_m] \to R^3 \times SO(2)<br>\end{equation}</p>
+<h2 id="微分平滑性"><a href="#微分平滑性" class="headerlink" title="微分平滑性"></a>微分平滑性</h2><p>微分平滑性指的是四旋翼的状态量和系统的控制输入可以利用轨迹状态$\sigma$及其微分项来表示. 可以证明, 最高到阶数为4的轨迹微分,就可以将所有的状态量和控制输入都表示出来. 即, 存在函数$f$, 使得:<br>\begin{equation}<br>(X,u)=f(\sigma,\dot{\sigma},\ddot{\sigma},\dddot{\sigma},\ddddot{\sigma})<br>\end{equation}</p>
+<h3 id="位置和角度"><a href="#位置和角度" class="headerlink" title="位置和角度"></a>位置和角度</h3><p>显然, 机体在世界坐标系下的位置, 速度, 加速度和轨迹状态有如下关系:</p>
+<p>\begin{equation}<br>\begin{aligned}<br>&amp;[x,y,z]^T=[\sigma_1,\sigma_2,\sigma_3]^T\\\\<br>&amp;[\dot{x},\dot{y},\dot{z}]^T=[\dot{\sigma_1},\dot{\sigma_2},\dot{\sigma_3}]^T\\\\<br>&amp;[\ddot{x},\ddot{y},\ddot{z}]^T=[\ddot{\sigma_1},\ddot{\sigma_2},\ddot{\sigma_3}]^T\\\\<br>\end{aligned}<br>\end{equation}<br>其中, $\sigma_i$为$\sigma$的第$i$个分量.<br>下面证明$R_{BW}$, 即机体坐标系到世界坐标系的转换矩阵可以利用轨迹状态$\sigma$及其微分项表示出来. 由公式\ref{eq9},可以得到:<br>\begin{equation}<br>\mathbf z_B=\frac {\mathbf t}{\lVert \mathbf t \rVert}<br>\end{equation}<br>其中,<br>\begin{equation}<br>\mathbf t=[\ddot \sigma_1, \ddot \sigma_2, \ddot \sigma_3+g]^T<br>\end{equation}<br>由机体的偏航角$\psi=\sigma_4$, 可以得到:<br>$$<br>\mathbf x_C=[cos \sigma_4, sin \sigma_4, 0]^T<br>$$<br>而$\mathbf x_B$和$\mathbf y_B$可以表示为:<br>\begin{equation}<br>\mathbf y_B=\frac {\mathbf z_B \times \mathbf x_C }{\lVert \mathbf z_B \times \mathbf x_C \rVert},\quad \mathbf x_B=\mathbf y_B \times \mathbf z_B,<br>\end{equation}<br>因此,可以定义$R_{BW}$为:<br>$$<br>R_{BW}=<br>\left [\begin{array}{c}<br>\mathbf x_B &amp; \mathbf y_B &amp; \mathbf z_B<br>\end{array}\right]<br>$$</p>
+<h3 id="角速度"><a href="#角速度" class="headerlink" title="角速度"></a>角速度</h3><p>下面来看角度部分. 证明从机体坐标系到世界坐标系的旋转矩阵$R_{BW}$和$\sigma$之间具有微分平滑的关系.<br>设$\mathbf{a}=\mathbf{\ddot{r}}$, 表示机体的加速度, 则有:<br>\begin{equation}\label{eq9}<br>m\mathbf{a}=-mg\mathbf{z}_w+u_1\mathbf{z}_B<br>\end{equation}</p>
+<p>对公式\ref{eq9}求一阶微分,可得:<br>\begin{equation}<br>m\dot{\mathbf{a}}={\dot{u_1}\mathbf{z}_B}+\omega_{BW} \times u_1\mathbf{z}_B<br>\end{equation}</p>
+<p>因为$u_1$是机体沿着 $\mathbf{z}_B$ 方向提供的总升力,因此有 $ \dot{u_1}=\mathbf{z}_B  \cdot m\dot{\mathbf{a}}$, 因此可以定义向量 $ \mathbf{h}_\omega$为:<br>\begin{equation}\label{eqhw}<br>\mathbf{h}_\omega=\omega_{BW}\times \mathbf{z}_B=\frac{m} {u_1}(\dot{\mathbf{a}}-(\mathbf{z}_B\cdot \dot{\mathbf{a}})\mathbf{z}_B)<br>\end{equation}</p>
+<p>$ \mathbf{h}_\omega$是$\frac{m}{u_1}\dot{\mathbf{a}}$ 在$\mathbf{x}_B-\mathbf{y}_B$ 平面的投影. 设机体坐标系下的角速度值为$ [p,q,r] ^T$,则前两项 $p,q$为:<br>\begin{equation}<br>p=-\mathbf{\omega}\cdot \mathbf{y}_B, \quad q=\mathbf{h}_w\cdot \mathbf{x}_B<br>\end{equation}<br>由\ref{eq9}可以得到:<br>\begin{equation}<br>r=\omega_{BW}\cdot \mathbf{z}_B=(\omega_{BC}+\omega_{CW})\cdot\mathbf{z}_B=\omega_{CW}\cdot\mathbf{z}_B=\dot{\psi}\mathbf{z}_W\cdot\mathbf{z}_B<br>\end{equation}<br>上式子中需要说明的是, $\omega_{BC}$不含有$\mathbf{z}_B$的分量. 因此$\omega_{BC}\cdot\mathbf{z}_B=0$</p>
+<h3 id="角加速度"><a href="#角加速度" class="headerlink" title="角加速度"></a>角加速度</h3><p>对公式\ref{eq9}求2阶微分:<br>\begin{equation}\label{eqddot}<br>m\ddot{\mathbf{a}}=\dot{u_1}\mathbf{z}_B+2\omega_{BW}\times \dot{u_1}+\omega_{BW}\times\omega_{BW}\times u_1\mathbf{z}_B+\alpha_{BW} \times u_1\mathbf{z}_B<br>\end{equation}<br>其中$\alpha_{BW}$是$\omega_{BW}$的一阶微分.<br>将公式\ref{eqddot}沿着$\mathbf{z}_B$方向投影,即在等式两边同时点乘($\cdot$)$\mathbf{z}_B$,整理可以得到:<br>\begin{equation}<br>\ddot{u_1}=\mathbf{z}_B \cdot m\ddot{\mathbf{a}}-\mathbf{z}_B\cdot(\omega_{BW}\times\omega_{BW} \times u_1\mathbf{z}_B)<br>\end{equation}<br>类似公式\ref{eqhw}的过程,将上式带入公式\ref{eqddot}中,即可求得$\alpha_{BW}$的值. 定义$\mathbf{h}_\alpha$为$\alpha_{BW}$在$\mathbf{x}_B-\mathbf{y}_B$平面的投影向量:<br>\begin{equation}<br>\mathbf{h}_\alpha=\alpha_{BW}\times\mathbf{z}_B<br>\end{equation}<br>则$\alpha_{BW}$在$\mathbf{x}_B$和$\mathbf{y}_B$方向上的分量为:<br>\begin{equation}<br>\dot{p}=-\mathbf{h}_\alpha\cdot\mathbf{y}_B, \quad \dot{q}=-\mathbf{h}_\alpha\cdot\mathbf{x}_B<br>\end{equation}<br>另外,对于$\alpha_{BW}$存在以下式子:<br>\begin{equation}<br>\alpha_{BW}=\alpha_{BC}+\omega_{CW} \times \omega_{BC}+\alpha_{CW}<br>\end{equation}<br>同时,注意到$\alpha_{BC}\cdot \mathbf{z}_B=0$, 以及$\mathbf{z}_B \cdot \omega_{CW} \times \omega_{BC}=0$. 则$\alpha_{BW}$沿$\mathbf{z}_B$方向的分量 $\ddot r$ 为:<br>\begin{equation}<br>\dot{r}=\alpha_{BW}\cdot  \mathbf{z}_B=\alpha_{CW} \cdot \mathbf{z}_B=\ddot{\psi}\mathbf z_W\cdot \mathbf{z}_B<br>\end{equation}</p>
+<h3 id="控制输入"><a href="#控制输入" class="headerlink" title="控制输入"></a>控制输入</h3><p>控制输入的第一个分量$u_1$可以表示为:<br>\begin{equation}<br>u_1=m\lVert \mathbf t \rVert<br>\end{equation}<br>由欧拉方程可以得到:<br>\begin{equation}<br>\left[\begin{array}{c}<br>u_1\\u_2\\u_3<br>\end{array}\right]<br>=J<br>\left[\begin{array}{c}<br>\dot p\\\dot q\\\dot r<br>\end{array}\right]<br>+<br>\left[\begin{array}{c}<br> p\\q\\r\\<br>\end{array}\right]<br>\times J<br>\left[\begin{array}{c}<br> p\\q\\r\\<br>\end{array}\right]<br>\end{equation}<br>其中$J$是机体的惯性矩阵. 因为机体的角速度和角加速度都可以用轨迹状态及其微分项表示,$u_2,u_3,u_4$ 可以通过通过轨迹状态及其4阶以内的微分项计算出来.</p>
+
+      
+    </div>
+
+    <div>
+      
+        
+
+      
+    </div>
+
+    <div>
+      
+        
+
+      
+    </div>
+
+    <div>
+      
+        
+
+      
+    </div>
+
+    <footer class="post-footer">
+      
+        <div class="post-tags">
+          
+            <a href="/tags/轨迹规划/" rel="tag"># 轨迹规划</a>
+          
+            <a href="/tags/微分平滑/" rel="tag"># 微分平滑</a>
+          
+        </div>
+      
+
+      
+        
+      
+
+      
+        <div class="post-nav">
+          <div class="post-nav-next post-nav-item">
+            
+              <a href="/2017/05/05/rosactionlib/" rel="next" title="rosactionlib-带反馈的rosservice">
+                <i class="fa fa-chevron-left"></i> rosactionlib-带反馈的rosservice
+              </a>
+            
+          </div>
+
+          <span class="post-nav-divider"></span>
+
+          <div class="post-nav-prev post-nav-item">
+            
+          </div>
+        </div>
+      
+
+      
+      
+    </footer>
+  </article>
+
+
+
+    <div class="post-spread">
+      
+    </div>
+  </div>
+
+
+          </div>
+          
+
+
+          
+  <div class="comments" id="comments">
+    
+  </div>
+
+
+        </div>
+        
+          
+  
+  <div class="sidebar-toggle">
+    <div class="sidebar-toggle-line-wrap">
+      <span class="sidebar-toggle-line sidebar-toggle-line-first"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-middle"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-last"></span>
+    </div>
+  </div>
+
+  <aside id="sidebar" class="sidebar">
+    <div class="sidebar-inner">
+
+      
+
+      
+        <ul class="sidebar-nav motion-element">
+          <li class="sidebar-nav-toc sidebar-nav-active" data-target="post-toc-wrap" >
+            文章目录
+          </li>
+          <li class="sidebar-nav-overview" data-target="site-overview">
+            站点概览
+          </li>
+        </ul>
+      
+
+      <section class="site-overview sidebar-panel">
+        <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+          <img class="site-author-image" itemprop="image"
+               src="/uploads/avatar.jpg"
+               alt="Guo Xiaodong" />
+          <p class="site-author-name" itemprop="name">Guo Xiaodong</p>
+           
+              <p class="site-description motion-element" itemprop="description"></p>
+          
+        </div>
+        <nav class="site-state motion-element">
+
+          
+            <div class="site-state-item site-state-posts">
+              <a href="/archives">
+                <span class="site-state-item-count">8</span>
+                <span class="site-state-item-name">日志</span>
+              </a>
+            </div>
+          
+
+          
+            
+            
+            <div class="site-state-item site-state-categories">
+              
+                <span class="site-state-item-count">5</span>
+                <span class="site-state-item-name">分类</span>
+              
+            </div>
+          
+
+          
+            
+            
+            <div class="site-state-item site-state-tags">
+              
+                <span class="site-state-item-count">14</span>
+                <span class="site-state-item-name">标签</span>
+              
+            </div>
+          
+
+        </nav>
+
+        
+
+        <div class="links-of-author motion-element">
+          
+        </div>
+
+        
+        
+
+        
+        
+
+        
+
+
+      </section>
+
+      
+      <!--noindex-->
+        <section class="post-toc-wrap motion-element sidebar-panel sidebar-panel-active">
+          <div class="post-toc">
+
+            
+              
+            
+
+            
+              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#状态和轨迹定义"><span class="nav-number">1.</span> <span class="nav-text">状态和轨迹定义</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#微分平滑性"><span class="nav-number">2.</span> <span class="nav-text">微分平滑性</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#位置和角度"><span class="nav-number">2.1.</span> <span class="nav-text">位置和角度</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#角速度"><span class="nav-number">2.2.</span> <span class="nav-text">角速度</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#角加速度"><span class="nav-number">2.3.</span> <span class="nav-text">角加速度</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#控制输入"><span class="nav-number">2.4.</span> <span class="nav-text">控制输入</span></a></li></ol></li></ol></div>
+            
+
+          </div>
+        </section>
+      <!--/noindex-->
+      
+
+      
+
+    </div>
+  </aside>
+
+
+        
+      </div>
+    </main>
+
+    <footer id="footer" class="footer">
+      <div class="footer-inner">
+        <div class="copyright" >
+  
+  &copy; 
+  <span itemprop="copyrightYear">2017</span>
+  <span class="with-love">
+    <i class="fa fa-heart"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">Guo Xiaodong</span>
+</div>
+
+
+<div class="powered-by">
+  由 <a class="theme-link" href="https://hexo.io">Hexo</a> 强力驱动
+</div>
+
+<div class="theme-info">
+  主题 -
+  <a class="theme-link" href="https://github.com/iissnan/hexo-theme-next">
+    NexT.Pisces
+  </a>
+</div>
+
+
+
+<script>
+(function(){
+    var bp = document.createElement('script');
+    bp.src = '//push.zhanzhang.baidu.com/push.js';
+    var s = document.getElementsByTagName("script")[0];
+    s.parentNode.insertBefore(bp, s);
+})();
+</script>
+
+        
+
+        
+      </div>
+    </footer>
+
+    
+      <div class="back-to-top">
+        <i class="fa fa-arrow-up"></i>
+        
+      </div>
+    
+
+  </div>
+
+  
+
+<script type="text/javascript">
+  if (Object.prototype.toString.call(window.Promise) !== '[object Function]') {
+    window.Promise = null;
+  }
+</script>
+
+
+
+
+
+
+
+
+
+  
+
+
+
+
+
+
+
+
+
+
+
+
+  
+  <script type="text/javascript" src="/lib/jquery/index.js?v=2.1.3"></script>
+
+  
+  <script type="text/javascript" src="/lib/fastclick/lib/fastclick.min.js?v=1.0.6"></script>
+
+  
+  <script type="text/javascript" src="/lib/jquery_lazyload/jquery.lazyload.js?v=1.9.7"></script>
+
+  
+  <script type="text/javascript" src="/lib/velocity/velocity.min.js?v=1.2.1"></script>
+
+  
+  <script type="text/javascript" src="/lib/velocity/velocity.ui.min.js?v=1.2.1"></script>
+
+  
+  <script type="text/javascript" src="/lib/fancybox/source/jquery.fancybox.pack.js?v=2.1.5"></script>
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/utils.js?v=5.1.1"></script>
+
+  <script type="text/javascript" src="/js/src/motion.js?v=5.1.1"></script>
+
+
+
+  
+  
+
+
+  <script type="text/javascript" src="/js/src/affix.js?v=5.1.1"></script>
+
+  <script type="text/javascript" src="/js/src/schemes/pisces.js?v=5.1.1"></script>
+
+
+
+  
+  <script type="text/javascript" src="/js/src/scrollspy.js?v=5.1.1"></script>
+<script type="text/javascript" src="/js/src/post-details.js?v=5.1.1"></script>
+
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/bootstrap.js?v=5.1.1"></script>
+
+
+
+  
+
+
+  
+
+
+
+
+	
+
+
+
+
+
+  
+
+
+
+
+
+  
+
+
+
+
+
+  
+
+
+
+
+
+
+  
+
+
+
+
+
+  
+
+  
+<script>
+(function(){
+    var bp = document.createElement('script');
+    var curProtocol = window.location.protocol.split(':')[0];
+    if (curProtocol === 'https') {
+        bp.src = 'https://zz.bdstatic.com/linksubmit/push.js';        
+    }
+    else {
+        bp.src = 'http://push.zhanzhang.baidu.com/push.js';
+    }
+    var s = document.getElementsByTagName("script")[0];
+    s.parentNode.insertBefore(bp, s);
+})();
+</script><!-- hexo-inject:begin --><!-- Begin: Injected MathJax -->
+<script type="text/x-mathjax-config">
+  MathJax.Hub.Config({"tex2jax":{"inlineMath":[["$","$"],["\\(","\\)"]],"skipTags":["script","noscript","style","textarea","pre","code"],"processEscapes":true},"TeX":{"equationNumbers":{"autoNumber":"AMS"}}});
+</script>
+
+<script type="text/x-mathjax-config">
+  MathJax.Hub.Queue(function() {
+    var all = MathJax.Hub.getAllJax(), i;
+    for(i=0; i < all.length; i += 1) {
+      all[i].SourceElement().parentNode.className += ' has-jax';
+    }
+  });
+</script>
+
+<script type="text/javascript" src="//cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML">
+</script>
+<!-- End: Injected MathJax -->
+<!-- hexo-inject:end -->
+
+
+  
+
+  
+
+  
+
+</body>
+</html>
