@@ -74,7 +74,7 @@
 <link href="/css/main.css?v=5.1.1" rel="stylesheet" type="text/css" />
 
 
-  <meta name="keywords" content="轨迹规划,微分平滑,四旋翼," />
+  <meta name="keywords" content="轨迹规划,RRT," />
 
 
 
@@ -90,19 +90,20 @@
 
 
 
-<meta name="description" content="对于轨迹规划问题,为了使生成的轨迹能够被良好地执行, 考虑轨迹执行器的动力学模型是必要的.而对于四旋翼来说, 微分平滑性是一个非常重要的动力学特性. 相当于在轨迹曲线和系统的状态和控制输入之间架起了一个桥梁,使得我们可以通过轨迹参数就可以分析四旋翼的状态和控制输入性质. 从而使求解满足运动学和动力学约束的最优轨迹成为可能. Kumar 实验室的 Daniel Warren Mellinger 在其">
-<meta name="keywords" content="轨迹规划,微分平滑,四旋翼">
+<meta name="description" content="我们将四旋翼的轨迹规划问题分为两层，即全局轨迹规划器和局部轨迹规划．在起飞前，根据始末状态和已知的部分环境信息规划一条全局轨迹．　在执行轨迹的过程中，局部轨迹规划期根据局部的障碍信息进行局部轨迹重规划，给四旋翼执行．全局轨迹规划分为两部分，利用RRT生成初始的轨迹序列点，再用多项式在点间进行插值．这篇文章介绍第一不分，即利用RRT得到初始的轨迹序列点． RRT　(Rapidly-exploring">
+<meta name="keywords" content="轨迹规划,RRT">
 <meta property="og:type" content="article">
-<meta property="og:title" content="四旋翼轨迹规划(1):微分平滑">
-<meta property="og:url" content="http://marsgoxd.com/2017/05/07/diffflat/index.html">
+<meta property="og:title" content="四旋翼轨迹规划(2):RRT生成路径点">
+<meta property="og:url" content="http://marsgoxd.com/2017/05/12/rrt/index.html">
 <meta property="og:site_name" content="Guo Xiaodong&#39;s Blog">
-<meta property="og:description" content="对于轨迹规划问题,为了使生成的轨迹能够被良好地执行, 考虑轨迹执行器的动力学模型是必要的.而对于四旋翼来说, 微分平滑性是一个非常重要的动力学特性. 相当于在轨迹曲线和系统的状态和控制输入之间架起了一个桥梁,使得我们可以通过轨迹参数就可以分析四旋翼的状态和控制输入性质. 从而使求解满足运动学和动力学约束的最优轨迹成为可能. Kumar 实验室的 Daniel Warren Mellinger 在其">
-<meta property="og:image" content="http://marsgoxd.com/2017/05/07/diffflat/figure1.png">
-<meta property="og:updated_time" content="2017-05-12T07:31:40.119Z">
+<meta property="og:description" content="我们将四旋翼的轨迹规划问题分为两层，即全局轨迹规划器和局部轨迹规划．在起飞前，根据始末状态和已知的部分环境信息规划一条全局轨迹．　在执行轨迹的过程中，局部轨迹规划期根据局部的障碍信息进行局部轨迹重规划，给四旋翼执行．全局轨迹规划分为两部分，利用RRT生成初始的轨迹序列点，再用多项式在点间进行插值．这篇文章介绍第一不分，即利用RRT得到初始的轨迹序列点． RRT　(Rapidly-exploring">
+<meta property="og:image" content="http://marsgoxd.com/2017/05/12/rrt/1.2.jpg">
+<meta property="og:image" content="http://marsgoxd.com/2017/05/12/rrt/1.1.jpg">
+<meta property="og:updated_time" content="2017-06-01T05:53:46.509Z">
 <meta name="twitter:card" content="summary">
-<meta name="twitter:title" content="四旋翼轨迹规划(1):微分平滑">
-<meta name="twitter:description" content="对于轨迹规划问题,为了使生成的轨迹能够被良好地执行, 考虑轨迹执行器的动力学模型是必要的.而对于四旋翼来说, 微分平滑性是一个非常重要的动力学特性. 相当于在轨迹曲线和系统的状态和控制输入之间架起了一个桥梁,使得我们可以通过轨迹参数就可以分析四旋翼的状态和控制输入性质. 从而使求解满足运动学和动力学约束的最优轨迹成为可能. Kumar 实验室的 Daniel Warren Mellinger 在其">
-<meta name="twitter:image" content="http://marsgoxd.com/2017/05/07/diffflat/figure1.png">
+<meta name="twitter:title" content="四旋翼轨迹规划(2):RRT生成路径点">
+<meta name="twitter:description" content="我们将四旋翼的轨迹规划问题分为两层，即全局轨迹规划器和局部轨迹规划．在起飞前，根据始末状态和已知的部分环境信息规划一条全局轨迹．　在执行轨迹的过程中，局部轨迹规划期根据局部的障碍信息进行局部轨迹重规划，给四旋翼执行．全局轨迹规划分为两部分，利用RRT生成初始的轨迹序列点，再用多项式在点间进行插值．这篇文章介绍第一不分，即利用RRT得到初始的轨迹序列点． RRT　(Rapidly-exploring">
+<meta name="twitter:image" content="http://marsgoxd.com/2017/05/12/rrt/1.2.jpg">
 
 
 
@@ -130,13 +131,13 @@
 
 
 
-  <link rel="canonical" href="http://marsgoxd.com/2017/05/07/diffflat/"/>
+  <link rel="canonical" href="http://marsgoxd.com/2017/05/12/rrt/"/>
 
 
 
 
 
-  <title>四旋翼轨迹规划(1):微分平滑 | Guo Xiaodong's Blog</title><!-- hexo-inject:begin --><!-- hexo-inject:end -->
+  <title>四旋翼轨迹规划(2):RRT生成路径点 | Guo Xiaodong's Blog</title><!-- hexo-inject:begin --><!-- hexo-inject:end -->
 </head>
 
 <body itemscope itemtype="http://schema.org/WebPage" lang="zh-Hans">
@@ -285,7 +286,7 @@
   
 
   <article class="post post-type-normal " itemscope itemtype="http://schema.org/Article">
-    <link itemprop="mainEntityOfPage" href="http://marsgoxd.com/2017/05/07/diffflat/">
+    <link itemprop="mainEntityOfPage" href="http://marsgoxd.com/2017/05/12/rrt/">
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
       <meta itemprop="name" content="Guo Xiaodong">
@@ -302,7 +303,7 @@
 
         
         
-          <h1 class="post-title" itemprop="name headline">四旋翼轨迹规划(1):微分平滑</h1>
+          <h1 class="post-title" itemprop="name headline">四旋翼轨迹规划(2):RRT生成路径点</h1>
         
 
         <div class="post-meta">
@@ -314,8 +315,8 @@
               
                 <span class="post-meta-item-text">发表于</span>
               
-              <time title="创建于" itemprop="dateCreated datePublished" datetime="2017-05-07T11:43:12+08:00">
-                2017-05-07
+              <time title="创建于" itemprop="dateCreated datePublished" datetime="2017-05-12T15:48:27+08:00">
+                2017-05-12
               </time>
             
 
@@ -355,9 +356,9 @@
                 <span class="post-meta-item-icon">
                   <i class="fa fa-comment-o"></i>
                 </span>
-                <a href="/2017/05/07/diffflat/#comments" itemprop="discussionUrl">
+                <a href="/2017/05/12/rrt/#comments" itemprop="discussionUrl">
                   <span class="post-comments-count disqus-comment-count"
-                        data-disqus-identifier="2017/05/07/diffflat/" itemprop="commentCount"></span>
+                        data-disqus-identifier="2017/05/12/rrt/" itemprop="commentCount"></span>
                 </a>
               </span>
             
@@ -382,17 +383,16 @@
       
 
       
-        <p>对于轨迹规划问题,为了使生成的轨迹能够被良好地执行, 考虑轨迹执行器的动力学模型是必要的.而对于四旋翼来说, 微分平滑性是一个非常重要的动力学特性. 相当于在轨迹曲线和系统的状态和控制输入之间架起了一个桥梁,使得我们可以通过轨迹参数就可以分析四旋翼的状态和控制输入性质. 从而使求解满足运动学和动力学约束的最优轨迹成为可能. <em>Kumar</em> 实验室的 <em>Daniel Warren Mellinger</em> 在其博士论文 <em>Trajectory Generation and Control for Quadrotors</em> 对四旋翼的微分平滑性有过精彩的阐述. 这篇文章也参考了其中的内容.</p>
-<h2 id="状态和轨迹定义"><a href="#状态和轨迹定义" class="headerlink" title="状态和轨迹定义"></a>状态和轨迹定义</h2><p>四旋翼的坐标系如下图所示. 包括世界坐标系$W$和机体坐标系$B$.<br><img src="/2017/05/07/diffflat/figure1.png" alt=""><br>机体的角速度$\omega_{BW}$可表示为:<br>\begin{equation}\label{eq1}<br>\omega_{BW}=p\mathbf{x}_B+q\mathbf{y}_B+r\mathbf{z}_B;<br>\end{equation}<br>四旋翼的状态是一个12维的向量,包括平动位置和速度,以及欧拉角和机体坐标系下的角速度. 其状态空间可表示为:<br>$$<br>X=[x,y,z,\phi,\theta,\psi,\dot{x},\dot{y},\dot{z},p,q,r]^T<br>$$<br>控制向量为:<br>\begin{equation}<br>u=\left[\begin{array}{c}<br>    u_1 \\\\<br>    u_2 \\\\<br>    u_3 \\\\<br>    u_4<br>  \end{array}\right]<br>  =\left[\begin{array}{c}<br>     F_1+F_2+F_3+F_4 \\\\<br>     F_2D-F_4D \\\\<br>     -F_1D+F_3D \\\\<br>     M_1-M_2+M_3-M_4<br>   \end{array}\right]<br>\end{equation}<br>其中,$F_i=K_F\omega_i^2$ 是旋翼$i$产生的沿机体坐标系垂直向上的推力. $M_i=K_M\omega_i^2$ 是旋翼$i$产生的扭矩. $D$是单个机臂的长度.<br>定义轨迹上一点的状态为:<br>$$<br>\sigma=[x,y,z,\psi]^T<br>$$<br>其中, $x,y,z$ 是机体中心在世界坐标系下的坐标. $\psi$ 是机体的偏航角. 因此, 轨迹曲线$\sigma(t)$可以被定义为:<br>\begin{equation}<br>\sigma(t): [t_0,t_m] \to R^3 \times SO(2)<br>\end{equation}</p>
-<h2 id="微分平滑性"><a href="#微分平滑性" class="headerlink" title="微分平滑性"></a>微分平滑性</h2><p>微分平滑性指的是四旋翼的状态量和系统的控制输入可以利用轨迹状态$\sigma$及其微分项来表示. 可以证明, 最高到阶数为4的轨迹微分,就可以将所有的状态量和控制输入都表示出来. 即, 存在函数$f$, 使得:<br>\begin{equation}<br>(X,u)=f(\sigma,\dot{\sigma},\ddot{\sigma},\dddot{\sigma},\ddddot{\sigma})<br>\end{equation}</p>
-<h3 id="位置和角度"><a href="#位置和角度" class="headerlink" title="位置和角度"></a>位置和角度</h3><p>显然, 机体在世界坐标系下的位置, 速度, 加速度和轨迹状态有如下关系:</p>
-<p>\begin{equation}<br>\begin{aligned}<br>&amp;[x,y,z]^T=[\sigma_1,\sigma_2,\sigma_3]^T\\\\<br>&amp;[\dot{x},\dot{y},\dot{z}]^T=[\dot{\sigma_1},\dot{\sigma_2},\dot{\sigma_3}]^T\\\\<br>&amp;[\ddot{x},\ddot{y},\ddot{z}]^T=[\ddot{\sigma_1},\ddot{\sigma_2},\ddot{\sigma_3}]^T\\\\<br>\end{aligned}<br>\end{equation}<br>其中, $\sigma_i$为$\sigma$的第$i$个分量.<br>下面证明$R_{BW}$, 即机体坐标系到世界坐标系的转换矩阵可以利用轨迹状态$\sigma$及其微分项表示出来. 由公式\ref{eq9},可以得到:<br>\begin{equation}<br>\mathbf z_B=\frac {\mathbf t}{\lVert \mathbf t \rVert}<br>\end{equation}<br>其中,<br>\begin{equation}<br>\mathbf t=[\ddot \sigma_1, \ddot \sigma_2, \ddot \sigma_3+g]^T<br>\end{equation}<br>由机体的偏航角$\psi=\sigma_4$, 可以得到:<br>$$<br>\mathbf x_C=[cos \sigma_4, sin \sigma_4, 0]^T<br>$$<br>而$\mathbf x_B$和$\mathbf y_B$可以表示为:<br>\begin{equation}<br>\mathbf y_B=\frac {\mathbf z_B \times \mathbf x_C }{\lVert \mathbf z_B \times \mathbf x_C \rVert},\quad \mathbf x_B=\mathbf y_B \times \mathbf z_B,<br>\end{equation}<br>因此,可以定义$R_{BW}$为:<br>$$<br>R_{BW}=<br>\left [\begin{array}{c}<br>\mathbf x_B &amp; \mathbf y_B &amp; \mathbf z_B<br>\end{array}\right]<br>$$</p>
-<h3 id="角速度"><a href="#角速度" class="headerlink" title="角速度"></a>角速度</h3><p>下面来看角度部分. 证明从机体坐标系到世界坐标系的旋转矩阵$R_{BW}$和$\sigma$之间具有微分平滑的关系.<br>设$\mathbf{a}=\mathbf{\ddot{r}}$, 表示机体的加速度, 则有:<br>\begin{equation}\label{eq9}<br>m\mathbf{a}=-mg\mathbf{z}_w+u_1\mathbf{z}_B<br>\end{equation}</p>
-<p>对公式\ref{eq9}求一阶微分,可得:<br>\begin{equation}<br>m\dot{\mathbf{a}}={\dot{u_1}\mathbf{z}_B}+\omega_{BW} \times u_1\mathbf{z}_B<br>\end{equation}</p>
-<p>因为$u_1$是机体沿着 $\mathbf{z}_B$ 方向提供的总升力,因此有 $ \dot{u_1}=\mathbf{z}_B  \cdot m\dot{\mathbf{a}}$, 因此可以定义向量 $ \mathbf{h}_\omega$为:<br>\begin{equation}\label{eqhw}<br>\mathbf{h}_\omega=\omega_{BW}\times \mathbf{z}_B=\frac{m} {u_1}(\dot{\mathbf{a}}-(\mathbf{z}_B\cdot \dot{\mathbf{a}})\mathbf{z}_B)<br>\end{equation}</p>
-<p>$ \mathbf{h}_\omega$是$\frac{m}{u_1}\dot{\mathbf{a}}$ 在$\mathbf{x}_B-\mathbf{y}_B$ 平面的投影. 设机体坐标系下的角速度值为$ [p,q,r] ^T$,则前两项 $p,q$为:<br>\begin{equation}<br>p=-\mathbf{\omega}\cdot \mathbf{y}_B, \quad q=\mathbf{h}_w\cdot \mathbf{x}_B<br>\end{equation}<br>由公式\ref{eq1}可以得到:<br>\begin{equation}<br>r=\omega_{BW}\cdot \mathbf{z}_B=(\omega_{BC}+\omega_{CW})\cdot\mathbf{z}_B=\omega_{CW}\cdot\mathbf{z}_B=\dot{\psi}\mathbf{z}_W\cdot\mathbf{z}_B<br>\end{equation}<br>上式子中需要说明的是, $\omega_{BC}$不含有$\mathbf{z}_B$的分量. 因此$\omega_{BC}\cdot\mathbf{z}_B=0$</p>
-<h3 id="角加速度"><a href="#角加速度" class="headerlink" title="角加速度"></a>角加速度</h3><p>对公式\ref{eq9}求2阶微分:<br>\begin{equation}\label{eqddot}<br>m\ddot{\mathbf{a}}=\dot{u_1}\mathbf{z}_B+2\omega_{BW}\times \dot{u_1}+\omega_{BW}\times\omega_{BW}\times u_1\mathbf{z}_B+\alpha_{BW} \times u_1\mathbf{z}_B<br>\end{equation}<br>其中$\alpha_{BW}$是$\omega_{BW}$的一阶微分.<br>将公式\ref{eqddot}沿着$\mathbf{z}_B$方向投影,即在等式两边同时点乘($\cdot$)$\mathbf{z}_B$,整理可以得到:<br>\begin{equation}<br>\ddot{u_1}=\mathbf{z}_B \cdot m\ddot{\mathbf{a}}-\mathbf{z}_B\cdot(\omega_{BW}\times\omega_{BW} \times u_1\mathbf{z}_B)<br>\end{equation}<br>类似公式\ref{eqhw}的过程,将上式带入公式\ref{eqddot}中,即可求得$\alpha_{BW}$的值. 定义$\mathbf{h}_\alpha$为$\alpha_{BW}$在$\mathbf{x}_B-\mathbf{y}_B$平面的投影向量:<br>\begin{equation}<br>\mathbf{h}_\alpha=\alpha_{BW}\times\mathbf{z}_B<br>\end{equation}<br>则$\alpha_{BW}$在$\mathbf{x}_B$和$\mathbf{y}_B$方向上的分量为:<br>\begin{equation}<br>\dot{p}=-\mathbf{h}_\alpha\cdot\mathbf{y}_B, \quad \dot{q}=-\mathbf{h}_\alpha\cdot\mathbf{x}_B<br>\end{equation}<br>另外,对于$\alpha_{BW}$存在以下式子:<br>\begin{equation}<br>\alpha_{BW}=\alpha_{BC}+\omega_{CW} \times \omega_{BC}+\alpha_{CW}<br>\end{equation}<br>同时,注意到$\alpha_{BC}\cdot \mathbf{z}_B=0$, 以及$\mathbf{z}_B \cdot \omega_{CW} \times \omega_{BC}=0$. 则$\alpha_{BW}$沿$\mathbf{z}_B$方向的分量 $\dot r$ 为:<br>\begin{equation}<br>\dot{r}=\alpha_{BW}\cdot  \mathbf{z}_B=\alpha_{CW} \cdot \mathbf{z}_B=\ddot{\psi}\mathbf z_W\cdot \mathbf{z}_B<br>\end{equation}</p>
-<h3 id="控制输入"><a href="#控制输入" class="headerlink" title="控制输入"></a>控制输入</h3><p>控制输入的第一个分量$u_1$可以表示为:<br>\begin{equation}<br>u_1=m\lVert \mathbf t \rVert<br>\end{equation}<br>由欧拉方程可以得到:<br>\begin{equation}<br>\left[\begin{array}{c}<br>u_1\\u_2\\u_3<br>\end{array}\right]<br>=J<br>\left[\begin{array}{c}<br>\dot p\\\dot q\\\dot r<br>\end{array}\right]<br>+<br>\left[\begin{array}{c}<br> p\\q\\r\\<br>\end{array}\right]<br>\times J<br>\left[\begin{array}{c}<br> p\\q\\r\\<br>\end{array}\right]<br>\end{equation}<br>其中$J$是机体的惯性矩阵. 因为机体的角速度和角加速度都可以用轨迹状态及其微分项表示,$u_2,u_3,u_4$ 可以通过通过轨迹状态及其4阶以内的微分项计算出来.</p>
+        <p>我们将四旋翼的轨迹规划问题分为两层，即全局轨迹规划器和局部轨迹规划．在起飞前，根据始末状态和已知的部分环境信息规划一条全局轨迹．　在执行轨迹的过程中，局部轨迹规划期根据局部的障碍信息进行局部轨迹重规划，给四旋翼执行．全局轨迹规划分为两部分，利用RRT生成初始的轨迹序列点，再用多项式在点间进行插值．这篇文章介绍第一不分，即利用RRT得到初始的轨迹序列点．</p>
+<p>RRT　(Rapidly-exploring Random Trees)．快速扩展随机树，是一种采样的轨迹规划方法. 而RRT Connect是RRT的改进方法，其分别从起始状态开始扩展两棵树．本文采样RRT Connect 方法．编程采用了<a href="http://ompl.kavrakilab.org/planners.html" target="_blank" rel="external">OMPL</a>库实现．</p>
+<p>我们设定一个规划情景。四旋翼的初始位置是（0,0,0），末位置是（10,18,5），环境中障碍物信息如下图：</p>
+<p>OMPL库本身并没有提供加载三维地图的接口。障碍物碰撞检测需要通过添加状态有效检测函数完成。详细的说明在<a href="http://ompl.kavrakilab.org/stateValidation.html" target="_blank" rel="external">OMPL状态有效检测</a>中。</p>
+<p>在修改障碍物检测函数之前，先定义表示矩形障碍物的结构体：<br><figure class="highlight c++"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div></pre></td><td class="code"><pre><div class="line"><span class="class"><span class="keyword">struct</span> <span class="title">obstacleShape</span></span></div><div class="line">&#123;</div><div class="line">     <span class="keyword">double</span> x_min,x_max,y_min,y_max;</div><div class="line">     obstacleShape(<span class="keyword">double</span> xmin, <span class="keyword">double</span> xmax, <span class="keyword">double</span> ymin, <span class="keyword">double</span> ymax): x_min(xmin),x_max(xmax),y_min(ymin),y_max(ymax)&#123;&#125;</div><div class="line">&#125;;</div></pre></td></tr></table></figure></p>
+<p>在主程序中添加障碍物信息：</p>
+<figure class="highlight c++"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div></pre></td><td class="code"><pre><div class="line"><span class="built_in">std</span>::<span class="built_in">vector</span>&lt;obstacleShape&gt; obs;</div><div class="line">obs.push_back(obstacleShape(<span class="number">1</span>,<span class="number">5</span>,<span class="number">1</span>,<span class="number">2</span>));</div><div class="line">obs.push_back(obstacleShape(<span class="number">0</span>,<span class="number">4</span>,<span class="number">5</span>,<span class="number">6</span>));</div><div class="line">obs.push_back(obstacleShape(<span class="number">4</span>,<span class="number">8</span>,<span class="number">10</span>,<span class="number">11</span>));</div><div class="line">obs.push_back(obstacleShape(<span class="number">1.5</span>,<span class="number">5.5</span>,<span class="number">11.5</span>,<span class="number">12.5</span>));    </div><div class="line">obs.push_back(obstacleShape(<span class="number">6</span>,<span class="number">10</span>,<span class="number">13</span>,<span class="number">14</span>));</div></pre></td></tr></table></figure>
+<p>状态有效检测函数：</p>
+<figure class="highlight c++"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div><div class="line">20</div><div class="line">21</div><div class="line">22</div><div class="line">23</div></pre></td><td class="code"><pre><div class="line"><span class="function"><span class="keyword">bool</span> <span class="title">isStateValid</span><span class="params">(<span class="keyword">const</span> ob::State *state)</span></span></div><div class="line">&#123;</div><div class="line">    <span class="comment">// cast the abstract state type to the type we expect</span></div><div class="line">    <span class="keyword">const</span> ob::SE3StateSpace::StateType *se3state = state-&gt;as&lt;ob::SE3StateSpace::StateType&gt;();</div><div class="line"></div><div class="line">    <span class="comment">// extract the first component of the state and cast it to what we expect</span></div><div class="line">    <span class="keyword">const</span> ob::RealVectorStateSpace::StateType *pos = se3state-&gt;as&lt;ob::RealVectorStateSpace::StateType&gt;(<span class="number">0</span>);</div><div class="line"></div><div class="line">    <span class="comment">// extract the second component of the state and cast it to what we expect</span></div><div class="line">    <span class="keyword">const</span> ob::SO3StateSpace::StateType *rot = se3state-&gt;as&lt;ob::SO3StateSpace::StateType&gt;(<span class="number">1</span>);</div><div class="line"></div><div class="line">    <span class="comment">// check validity of state defined by pos &amp; rot</span></div><div class="line">    <span class="keyword">double</span> x=pos-&gt;values[<span class="number">0</span>];</div><div class="line">    <span class="keyword">double</span> y=pos-&gt;values[<span class="number">1</span>];</div><div class="line">    <span class="keyword">double</span> z=pos-&gt;values[<span class="number">2</span>];</div><div class="line"></div><div class="line">    <span class="keyword">for</span>(<span class="keyword">int</span> i=<span class="number">0</span>;i&lt;obs.size();i++)</div><div class="line">    &#123;</div><div class="line">        <span class="keyword">if</span>(x&gt;=obs[i].x_min&amp;&amp;x&lt;=obs[i].x_max&amp;&amp;y&gt;=obs[i].y_min&amp;&amp;y&lt;=obs[i].y_max)</div><div class="line">           <span class="keyword">return</span> <span class="number">0</span>;</div><div class="line">    &#125;</div><div class="line">    <span class="keyword">return</span> <span class="number">1</span>;</div><div class="line">&#125;</div></pre></td></tr></table></figure>
+<p>以下为路径规划的结果：<br><img src="/2017/05/12/rrt/1.2.jpg" alt="3维"><br><img src="/2017/05/12/rrt/1.1.jpg" alt="2维"><br>可以看到，通过RRT Connect, 我们可以得到了一个初步的规划路径。要想使得规划的轨迹对于四旋翼是可执行的，还需要后面的工作。</p>
 
       
     </div>
@@ -424,9 +424,7 @@
           
             <a href="/tags/轨迹规划/" rel="tag"># 轨迹规划</a>
           
-            <a href="/tags/微分平滑/" rel="tag"># 微分平滑</a>
-          
-            <a href="/tags/四旋翼/" rel="tag"># 四旋翼</a>
+            <a href="/tags/RRT/" rel="tag"># RRT</a>
           
         </div>
       
@@ -439,8 +437,8 @@
         <div class="post-nav">
           <div class="post-nav-next post-nav-item">
             
-              <a href="/2017/05/05/rosactionlib/" rel="next" title="rosactionlib-带反馈的rosservice">
-                <i class="fa fa-chevron-left"></i> rosactionlib-带反馈的rosservice
+              <a href="/2017/05/10/rostopicpub/" rel="next" title="终端手动发布ros-topic的方式">
+                <i class="fa fa-chevron-left"></i> 终端手动发布ros-topic的方式
               </a>
             
           </div>
@@ -448,10 +446,6 @@
           <span class="post-nav-divider"></span>
 
           <div class="post-nav-prev post-nav-item">
-            
-              <a href="/2017/05/10/rostopicpub/" rel="prev" title="终端手动发布ros-topic的方式">
-                终端手动发布ros-topic的方式 <i class="fa fa-chevron-right"></i>
-              </a>
             
           </div>
         </div>
@@ -528,17 +522,8 @@
       
 
       
-        <ul class="sidebar-nav motion-element">
-          <li class="sidebar-nav-toc sidebar-nav-active" data-target="post-toc-wrap" >
-            文章目录
-          </li>
-          <li class="sidebar-nav-overview" data-target="site-overview">
-            站点概览
-          </li>
-        </ul>
-      
 
-      <section class="site-overview sidebar-panel">
+      <section class="site-overview sidebar-panel sidebar-panel-active">
         <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
           <img class="site-author-image" itemprop="image"
                src="/uploads/avatar.jpg"
@@ -600,22 +585,6 @@
 
       </section>
 
-      
-      <!--noindex-->
-        <section class="post-toc-wrap motion-element sidebar-panel sidebar-panel-active">
-          <div class="post-toc">
-
-            
-              
-            
-
-            
-              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#状态和轨迹定义"><span class="nav-number">1.</span> <span class="nav-text">状态和轨迹定义</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#微分平滑性"><span class="nav-number">2.</span> <span class="nav-text">微分平滑性</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#位置和角度"><span class="nav-number">2.1.</span> <span class="nav-text">位置和角度</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#角速度"><span class="nav-number">2.2.</span> <span class="nav-text">角速度</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#角加速度"><span class="nav-number">2.3.</span> <span class="nav-text">角加速度</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#控制输入"><span class="nav-number">2.4.</span> <span class="nav-text">控制输入</span></a></li></ol></li></ol></div>
-            
-
-          </div>
-        </section>
-      <!--/noindex-->
       
 
       
@@ -770,9 +739,9 @@
     
       <script type="text/javascript">
         var disqus_config = function () {
-          this.page.url = 'http://marsgoxd.com/2017/05/07/diffflat/';
-          this.page.identifier = '2017/05/07/diffflat/';
-          this.page.title = '四旋翼轨迹规划(1):微分平滑';
+          this.page.url = 'http://marsgoxd.com/2017/05/12/rrt/';
+          this.page.identifier = '2017/05/12/rrt/';
+          this.page.title = '四旋翼轨迹规划(2):RRT生成路径点';
         };
         var d = document, s = d.createElement('script');
         s.src = 'https://http://marsgoxd.com.disqus.com/embed.js';

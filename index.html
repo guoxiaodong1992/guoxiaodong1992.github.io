@@ -280,6 +280,161 @@
   
 
   <article class="post post-type-normal " itemscope itemtype="http://schema.org/Article">
+    <link itemprop="mainEntityOfPage" href="http://marsgoxd.com/2017/05/12/rrt/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="Guo Xiaodong">
+      <meta itemprop="description" content="">
+      <meta itemprop="image" content="/uploads/avatar.jpg">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="Guo Xiaodong's Blog">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">
+                
+                <a class="post-title-link" href="/2017/05/12/rrt/" itemprop="url">四旋翼轨迹规划(2):RRT生成路径点</a></h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">发表于</span>
+              
+              <time title="创建于" itemprop="dateCreated datePublished" datetime="2017-05-12T15:48:27+08:00">
+                2017-05-12
+              </time>
+            
+
+            
+
+            
+          </span>
+
+          
+            <span class="post-category" >
+            
+              <span class="post-meta-divider">|</span>
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">分类于</span>
+              
+              
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/四旋翼/" itemprop="url" rel="index">
+                    <span itemprop="name">四旋翼</span>
+                  </a>
+                </span>
+
+                
+                
+              
+            </span>
+          
+
+          
+            
+              <span class="post-comments-count">
+                <span class="post-meta-divider">|</span>
+                <span class="post-meta-item-icon">
+                  <i class="fa fa-comment-o"></i>
+                </span>
+                <a href="/2017/05/12/rrt/#comments" itemprop="discussionUrl">
+                  <span class="post-comments-count disqus-comment-count"
+                        data-disqus-identifier="2017/05/12/rrt/" itemprop="commentCount"></span>
+                </a>
+              </span>
+            
+          
+
+          
+          
+
+          
+
+          
+
+          
+
+        </div>
+      </header>
+    
+
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        
+          
+          我们将四旋翼的轨迹规划问题分为两层，即全局轨迹规划器和局部轨迹规划．在起飞前，根据始末状态和已知的部分环境信息规划一条全局轨迹．　在执行轨迹的过程中，局部轨迹规划期根据局部的障碍信息进行局部轨迹重规划，给四旋翼执行．全局轨迹规划分为两部分，利用RRT生成初始的轨迹序列点，再用多项式在点间进行插值．这篇文章介绍第一不分，即利用RRT得到初始的轨迹序列点．
+RRT　(Rapidly-exploring Random Trees)．快速扩展随机树，是一种采样的轨迹规划方法. 而RRT Connect是RRT的改进方法，其分别从起始状态开始扩展两棵树．本文采样RRT Connect 方法．编程采用了OMPL库实现．
+我们设定一个规划情景。四旋翼的初始位置是（0,0,0），末位置是（10,18,5），环境中障碍物信息如下图：
+OMPL库本身并没有提供加载三维地图的接口。障碍物碰撞检测需要通过添加状态有效检测函数完成。详细的说明在OMPL状态有效检测中。
+在修改障碍物检测函数之前，先定义表示矩形障碍物的结构体：12345struct obstacleShape&#123;     double x
+          ...
+          <!--noindex-->
+          <div class="post-button text-center">
+            <a class="btn" href="/2017/05/12/rrt/#more" rel="contents">
+              阅读全文 &raquo;
+            </a>
+          </div>
+          <!--/noindex-->
+        
+      
+    </div>
+
+    <div>
+      
+    </div>
+
+    <div>
+      
+    </div>
+
+    <div>
+      
+    </div>
+
+    <footer class="post-footer">
+      
+
+      
+
+      
+
+      
+      
+        <div class="post-eof"></div>
+      
+    </footer>
+  </article>
+
+
+    
+      
+
+  
+
+  
+  
+  
+
+  <article class="post post-type-normal " itemscope itemtype="http://schema.org/Article">
     <link itemprop="mainEntityOfPage" href="http://marsgoxd.com/2017/05/10/rostopicpub/">
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
@@ -1563,7 +1718,7 @@ PX4介绍PX4是一款软件和硬件同时开源飞控项目。该项目起源�
           
             <div class="site-state-item site-state-posts">
               <a href="/archives">
-                <span class="site-state-item-count">8</span>
+                <span class="site-state-item-count">9</span>
                 <span class="site-state-item-name">日志</span>
               </a>
             </div>
