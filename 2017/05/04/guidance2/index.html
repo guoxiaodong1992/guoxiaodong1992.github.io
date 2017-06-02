@@ -90,17 +90,17 @@
 
 
 
-<meta name="description" content="我们用Guidance的前视双目进行三维重建。软件环境：ROS软件包：depth_image_proc, octomap_server, Guidance_SDK">
+<meta name="description" content="我们用Guidance的前视双目进行点云的生成。软件环境：ROS软件包：depth_image_proc, Guidance_SDK 相机标定Guidance的SDK并没有提供在Linux下直接读取相机标定参数的方式。 因此需要借助ROS中的第三方包。 这里采用的官方教程里的 StereoCalibration. 在完成标定后，将终端中出现的参数填入到Guidance-SDk-ROS/calibr">
 <meta name="keywords" content="Guidance,三维重建">
 <meta property="og:type" content="article">
 <meta property="og:title" content="Guidance三维重建（2）：生成点云">
 <meta property="og:url" content="http://marsgoxd.com/2017/05/04/guidance2/index.html">
 <meta property="og:site_name" content="Guo Xiaodong&#39;s Blog">
-<meta property="og:description" content="我们用Guidance的前视双目进行三维重建。软件环境：ROS软件包：depth_image_proc, octomap_server, Guidance_SDK">
-<meta property="og:updated_time" content="2017-05-05T09:06:41.521Z">
+<meta property="og:description" content="我们用Guidance的前视双目进行点云的生成。软件环境：ROS软件包：depth_image_proc, Guidance_SDK 相机标定Guidance的SDK并没有提供在Linux下直接读取相机标定参数的方式。 因此需要借助ROS中的第三方包。 这里采用的官方教程里的 StereoCalibration. 在完成标定后，将终端中出现的参数填入到Guidance-SDk-ROS/calibr">
+<meta property="og:updated_time" content="2017-06-02T12:01:11.108Z">
 <meta name="twitter:card" content="summary">
 <meta name="twitter:title" content="Guidance三维重建（2）：生成点云">
-<meta name="twitter:description" content="我们用Guidance的前视双目进行三维重建。软件环境：ROS软件包：depth_image_proc, octomap_server, Guidance_SDK">
+<meta name="twitter:description" content="我们用Guidance的前视双目进行点云的生成。软件环境：ROS软件包：depth_image_proc, Guidance_SDK 相机标定Guidance的SDK并没有提供在Linux下直接读取相机标定参数的方式。 因此需要借助ROS中的第三方包。 这里采用的官方教程里的 StereoCalibration. 在完成标定后，将终端中出现的参数填入到Guidance-SDk-ROS/calibr">
 
 
 
@@ -380,7 +380,15 @@
       
 
       
-        <p>我们用Guidance的前视双目进行三维重建。<br>软件环境：ROS<br>软件包：depth_image_proc, octomap_server, Guidance_SDK</p>
+        <p>我们用Guidance的前视双目进行点云的生成。<br>软件环境：ROS<br>软件包：depth_image_proc, Guidance_SDK</p>
+<h2 id="相机标定"><a href="#相机标定" class="headerlink" title="相机标定"></a>相机标定</h2><p>Guidance的SDK并没有提供在Linux下直接读取相机标定参数的方式。 因此需要借助ROS中的第三方包。 这里采用的官方教程里的 <a href="http://wiki.ros.org/camera_calibration/Tutorials/StereoCalibration" target="_blank" rel="external">StereoCalibration</a>. 在完成标定后，将终端中出现的参数填入到Guidance-SDk-ROS/calibration_files/canera_params_left(right).yaml中。</p>
+<h2 id="Guidance和机体坐标系"><a href="#Guidance和机体坐标系" class="headerlink" title="Guidance和机体坐标系"></a>Guidance和机体坐标系</h2><p>为了完成全局地图的构建，我们需要维护机体和Guidance传感器之间的坐标转换关系。因为他们之间的坐标关系是静态的，所以我们可以在launch文件中直接运行static_transform_publisher节点来维护。里面的数据是对应按照标准模式安装的坐标数据。</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div><div class="line">20</div><div class="line">21</div><div class="line">22</div><div class="line">23</div></pre></td><td class="code"><pre><div class="line">&lt;!-- Transform from base_link to the various sensors --&gt;</div><div class="line">&lt;node pkg=&quot;tf2_ros&quot; type=&quot;static_transform_publisher&quot; name=&quot;guidance_broadcaster_2&quot; args=&quot;0.0 0.0 0.105 0.0 0.0 -1.57079632679 base_link guidance_down&quot; /&gt;</div><div class="line">&lt;node pkg=&quot;tf2_ros&quot; type=&quot;static_transform_publisher&quot; name=&quot;guidance_broadcaster_3&quot; args=&quot;0.10 0.0 0.09 1.57079632679 0 -1.57079632679 base_link guidance_front&quot; /&gt;</div><div class="line">&lt;node pkg=&quot;tf2_ros&quot; type=&quot;static_transform_publisher&quot; name=&quot;guidance_broadcaster_4&quot; args=&quot;0.0 0.10 0.09 1.57079632679 0 3.14159265359 base_link guidance_right&quot; /&gt;</div><div class="line">&lt;node pkg=&quot;tf2_ros&quot; type=&quot;static_transform_publisher&quot; name=&quot;guidance_broadcaster_5&quot; args=&quot;0.10 0.0 0.09 1.57079632679 0 1.57079632679 base_link guidance_back&quot; /&gt;</div><div class="line">&lt;node pkg=&quot;tf2_ros&quot; type=&quot;static_transform_publisher&quot; name=&quot;guidance_broadcaster_6&quot; args=&quot;0.0 -0.10 0.09 1.57079632679 0 0 base_link guidance_left&quot; /&gt;</div><div class="line"></div><div class="line">&lt;!-- Here we generate the camera offsets for more accuracy, you have to do this for each camera set --&gt;</div><div class="line">&lt;!-- You could save a little overhead by directly transforming from camera to base_link and skip the above transforms --&gt;</div><div class="line">&lt;node pkg=&quot;tf2_ros&quot; type=&quot;static_transform_publisher&quot; name=&quot;guidance_broadcaster_7&quot; args=&quot;-0.075 0 0 0 0 0 guidance_down down_left&quot;/&gt;</div><div class="line">&lt;node pkg=&quot;tf2_ros&quot; type=&quot;static_transform_publisher&quot; name=&quot;guidance_broadcaster_8&quot; args=&quot;0.075 0 0 0 0 0 guidance_down down_right&quot; /&gt;</div><div class="line"></div><div class="line">&lt;node pkg=&quot;tf2_ros&quot; type=&quot;static_transform_publisher&quot; name=&quot;guidance_broadcaster_9&quot; args=&quot;-0.075 0 0 0 0 0 guidance_front guidancefront_left&quot;/&gt;</div><div class="line">&lt;node pkg=&quot;tf2_ros&quot; type=&quot;static_transform_publisher&quot; name=&quot;guidance_broadcaster_10&quot; args=&quot;0.075 0 0 0 0 0 guidance_front guidancefront_right&quot; /&gt;</div><div class="line"></div><div class="line">&lt;node pkg=&quot;tf2_ros&quot; type=&quot;static_transform_publisher&quot; name=&quot;guidance_broadcaster_11&quot; args=&quot;-0.075 0 0 0 0 0 guidance_right right_left&quot;/&gt;</div><div class="line">&lt;node pkg=&quot;tf2_ros&quot; type=&quot;static_transform_publisher&quot; name=&quot;guidance_broadcaster_12&quot; args=&quot;0.075 0 0 0 0 0 guidance_right right_right&quot; /&gt;</div><div class="line"></div><div class="line">&lt;node pkg=&quot;tf2_ros&quot; type=&quot;static_transform_publisher&quot; name=&quot;guidance_broadcaster_13&quot; args=&quot;-0.075 0 0 0 0 0 guidance_back back_left&quot;/&gt;</div><div class="line">&lt;node pkg=&quot;tf2_ros&quot; type=&quot;static_transform_publisher&quot; name=&quot;guidance_broadcaster_14&quot; args=&quot;0.075 0 0 0 0 0 guidance_back gback_right&quot; /&gt;</div><div class="line"></div><div class="line">&lt;node pkg=&quot;tf2_ros&quot; type=&quot;static_transform_publisher&quot; name=&quot;guidance_broadcaster_15&quot; args=&quot;-0.075 0 0 0 0 0 guidance_left left_left&quot;/&gt;</div><div class="line">&lt;node pkg=&quot;tf2_ros&quot; type=&quot;static_transform_publisher&quot; name=&quot;guidance_broadcaster_16&quot; args=&quot;0.075 0 0 0 0 0 guidance_left left_right&quot; /&gt;</div></pre></td></tr></table></figure>
+<p>其中，guidance_down/front/right/back/left分为代表Guidance的下/前/右/后/左件。每一件又分左/右摄像头。</p>
+<h2 id="Guidance和转换为标准openNI格式图像"><a href="#Guidance和转换为标准openNI格式图像" class="headerlink" title="Guidance和转换为标准openNI格式图像"></a>Guidance和转换为标准openNI格式图像</h2><p>根据<a href="https://developer.dji.com/guidance-sdk/documentation/introduction/index.html#data-structures" target="_blank" rel="external">Guidance SDK文档</a> ,  Guidance所提供的深度图每个像素为2个字节，其中低7位是小数部分，高9位是整数部分。而我们用到的depth_image_proc包并不直接支持这种格式。它支持的格式是标准的OpenNI设备的图像格式，像素点用uint16表示。知道了格式定义，完成格式转换就不难了。我们先将Guidance给的深度转换成用uint16表示的数据，单位为mm。计算公式为<code>g_depth=g_depth*1000/128</code>,其中<code>/128</code>是得到真实的深度值(原始数据低7位表示小数)，<code>*1000</code>是将米转换为毫米。这样做是为了避免格式转换过程中的低位的精度损失。 之后我们用depth_image_proc/convert_metric包将以mm表示的深度转换为m。通过以上步骤我们就完成了Guidance的深度格式和openNI格式的深度图之间的转换。这样我们就可以利用depth_image_proc/point_cloud_xyz包将深度图数据转换为sensor_msgs/PointCloud2形式的点云数据了。</p>
+<h2 id="depth-image-proc"><a href="#depth-image-proc" class="headerlink" title="depth_image_proc"></a>depth_image_proc</h2><p>接下来我们就可以跑depth_image_proc程序包了。终端指令为：<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div></pre></td><td class="code"><pre><div class="line">rosrun nodelet nodelet manager __name:=nodelet_manager</div><div class="line">rosrun nodelet nodelet load depth_image_proc/convert_metric nodelet_manager</div><div class="line">rosrun nodelet nodelet load depth_image_proc/point_cloud_xyz nodelet_manager image_rect:=image</div></pre></td></tr></table></figure></p>
+<h2 id="结果视频"><a href="#结果视频" class="headerlink" title="结果视频"></a>结果视频</h2><p>我们在室外场景下用Guidance的前双目摄像头。拍摄了一棵树。并将树的深度图转换为点云格式。为了显示效果，在rviz中显示的点云是累计最近3s的结果。</p>
+<video src="http://7xt5o8.com1.z0.glb.clouddn.com/Screencast%202017-04-13%2022:25:47.mp4" type="video/mp4" controls="controls" width="100%" height="100%"><br></video>
 
       
     </div>
@@ -514,8 +522,17 @@
       
 
       
+        <ul class="sidebar-nav motion-element">
+          <li class="sidebar-nav-toc sidebar-nav-active" data-target="post-toc-wrap" >
+            文章目录
+          </li>
+          <li class="sidebar-nav-overview" data-target="site-overview">
+            站点概览
+          </li>
+        </ul>
+      
 
-      <section class="site-overview sidebar-panel sidebar-panel-active">
+      <section class="site-overview sidebar-panel">
         <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
           <img class="site-author-image" itemprop="image"
                src="/uploads/avatar.jpg"
@@ -530,7 +547,7 @@
           
             <div class="site-state-item site-state-posts">
               <a href="/archives">
-                <span class="site-state-item-count">9</span>
+                <span class="site-state-item-count">10</span>
                 <span class="site-state-item-name">日志</span>
               </a>
             </div>
@@ -541,7 +558,7 @@
             
             <div class="site-state-item site-state-categories">
               <a href="/categories/index.html">
-                <span class="site-state-item-count">4</span>
+                <span class="site-state-item-count">5</span>
                 <span class="site-state-item-name">分类</span>
               </a>
             </div>
@@ -552,7 +569,7 @@
             
             <div class="site-state-item site-state-tags">
               <a href="/tags/index.html">
-                <span class="site-state-item-count">14</span>
+                <span class="site-state-item-count">15</span>
                 <span class="site-state-item-name">标签</span>
               </a>
             </div>
@@ -577,6 +594,22 @@
 
       </section>
 
+      
+      <!--noindex-->
+        <section class="post-toc-wrap motion-element sidebar-panel sidebar-panel-active">
+          <div class="post-toc">
+
+            
+              
+            
+
+            
+              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#相机标定"><span class="nav-number">1.</span> <span class="nav-text">相机标定</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#Guidance和机体坐标系"><span class="nav-number">2.</span> <span class="nav-text">Guidance和机体坐标系</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#Guidance和转换为标准openNI格式图像"><span class="nav-number">3.</span> <span class="nav-text">Guidance和转换为标准openNI格式图像</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#depth-image-proc"><span class="nav-number">4.</span> <span class="nav-text">depth_image_proc</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#结果视频"><span class="nav-number">5.</span> <span class="nav-text">结果视频</span></a></li></ol></div>
+            
+
+          </div>
+        </section>
+      <!--/noindex-->
       
 
       

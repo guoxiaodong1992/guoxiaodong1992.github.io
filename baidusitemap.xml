@@ -4,6 +4,70 @@
 
     
   <url>
+    <loc>http://marsgoxd.com/2017/05/04/guidance2/</loc>
+    <lastmod>2017-06-02T12:01:11.108Z</lastmod>
+    <data>
+        <display>
+        <title>Guidance三维重建（2）：生成点云</title>
+        <pubTime>2017-05-04T06:21:46.000Z</pubTime>
+        
+        <tag>Guidance</tag>
+         
+        <tag>三维重建</tag>
+         
+         
+           
+             
+              <breadCrumb title="Guidance" url="http://marsgoxd.com/categories/Guidance/"/>
+          
+        </display>
+    </data>
+    </url>
+
+    
+  <url>
+    <loc>http://marsgoxd.com/2016/09/13/GAZEBO/</loc>
+    <lastmod>2017-06-02T09:47:01.417Z</lastmod>
+    <data>
+        <display>
+        <title>基于PX4和Gazebo的飞行仿真</title>
+        <pubTime>2016-09-13T03:55:11.000Z</pubTime>
+        
+        <tag>PX4</tag>
+         
+        <tag>Gazebo</tag>
+         
+         
+           
+             
+              <breadCrumb title="四旋翼" url="http://marsgoxd.com/categories/%E5%9B%9B%E6%97%8B%E7%BF%BC/"/>
+          
+        </display>
+    </data>
+    </url>
+
+    
+  <url>
+    <loc>http://marsgoxd.com/2017/06/01/SLAM%E5%AD%A6%E4%B9%A0/</loc>
+    <lastmod>2017-06-01T13:13:21.937Z</lastmod>
+    <data>
+        <display>
+        <title>SLAM学习</title>
+        <pubTime>2017-06-01T13:12:38.000Z</pubTime>
+        
+        <tag>SLAM</tag>
+         
+         
+           
+             
+              <breadCrumb title="SLAM" url="http://marsgoxd.com/categories/SLAM/"/>
+          
+        </display>
+    </data>
+    </url>
+
+    
+  <url>
     <loc>http://marsgoxd.com/2017/05/12/rrt/</loc>
     <lastmod>2017-06-01T05:53:46.509Z</lastmod>
     <data>
@@ -95,28 +159,6 @@
     
     
   <url>
-    <loc>http://marsgoxd.com/2016/09/13/GAZEBO/</loc>
-    <lastmod>2017-05-05T14:06:40.080Z</lastmod>
-    <data>
-        <display>
-        <title>基于PX4和Gazebo的飞行仿真</title>
-        <pubTime>2016-09-13T03:55:11.000Z</pubTime>
-        
-        <tag>PX4</tag>
-         
-        <tag>Gazebo</tag>
-         
-         
-           
-             
-              <breadCrumb title="四旋翼" url="http://marsgoxd.com/categories/%E5%9B%9B%E6%97%8B%E7%BF%BC/"/>
-          
-        </display>
-    </data>
-    </url>
-
-    
-  <url>
     <loc>http://marsgoxd.com/2017/05/05/rosactionlib/</loc>
     <lastmod>2017-05-05T13:38:49.583Z</lastmod>
     <data>
@@ -152,28 +194,6 @@
            
              
               <breadCrumb title="四旋翼" url="http://marsgoxd.com/categories/%E5%9B%9B%E6%97%8B%E7%BF%BC/"/>
-          
-        </display>
-    </data>
-    </url>
-
-    
-  <url>
-    <loc>http://marsgoxd.com/2017/05/04/guidance2/</loc>
-    <lastmod>2017-05-05T09:06:41.521Z</lastmod>
-    <data>
-        <display>
-        <title>Guidance三维重建（2）：生成点云</title>
-        <pubTime>2017-05-04T06:21:46.000Z</pubTime>
-        
-        <tag>Guidance</tag>
-         
-        <tag>三维重建</tag>
-         
-         
-           
-             
-              <breadCrumb title="Guidance" url="http://marsgoxd.com/categories/Guidance/"/>
           
         </display>
     </data>

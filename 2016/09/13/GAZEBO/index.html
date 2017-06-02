@@ -102,7 +102,7 @@
 <meta property="og:image" content="http://7xt5o8.com1.z0.glb.clouddn.com/yss.png">
 <meta property="og:image" content="http://7xt5o8.com1.z0.glb.clouddn.com/jss.png">
 <meta property="og:image" content="http://7xt5o8.com1.z0.glb.clouddn.com/oss.png">
-<meta property="og:updated_time" content="2017-05-05T14:06:40.080Z">
+<meta property="og:updated_time" content="2017-06-02T09:47:01.417Z">
 <meta name="twitter:card" content="summary">
 <meta name="twitter:title" content="基于PX4和Gazebo的飞行仿真">
 <meta name="twitter:description" content="实验背景小型四旋翼无人机具有成本低，体积小，机械结构简单，灵活性高等优势，被逐步运用到生产生活中的诸多领域，如电力线路巡检、航拍、农业植保、灾情勘察、地理测绘等。而在无人机的飞控实现完成后，要想使其完成复杂的自主飞行任务，需要设计控制算法对无人机的飞行和任务执行进行控制。而算法的仿真实现对算法的设计和验证都有重要的意义。相比实际飞行，仿真飞行减少了时间成本和物质成本，同时方便对算法的逻辑和参数进行">
@@ -389,8 +389,8 @@
         <p><strong>实验背景</strong><br>小型四旋翼无人机具有成本低，体积小，机械结构简单，灵活性高等优势，被逐步运用到生产生活中的诸多领域，如电力线路巡检、航拍、农业植保、灾情勘察、地理测绘等。而在无人机的飞控实现完成后，要想使其完成复杂的自主飞行任务，需要设计控制算法对无人机的飞行和任务执行进行控制。而算法的仿真实现对算法的设计和验证都有重要的意义。相比实际飞行，仿真飞行减少了时间成本和物质成本，同时方便对算法的逻辑和参数进行重复修改。本文利用Gazebo机器人仿真平台和PX4飞行固件对无人机飞行进行软件仿真。利用PX4的Offboard Control模式，对其进行基于GPS的和基于雷达的飞行控制。</p>
 <p><strong>PX4介绍</strong><br>PX4是一款软件和硬件同时开源飞控项目。该项目起源于瑞士苏黎世联邦理工大学的计算机视觉与几何实验室的PIXHAWK项目，是目前最流行的开源飞控之一。PX4FMU自驾仪模块运行高效的(RTOS)实时ARM操作系统，其固件同时附带了一系列工具集、系统驱动/模块与外围软件接口层，所有这些软件（包括用户自定义的飞控软件）随OS内核一起，统一编译为固件形式，然后上传到飞控板中，从而实现对飞控板的软件配置。<br>PX4配套的软件架构主要分为4层：<br>a) API层：提供给用户做开发的接口层。<br>b) 框架层：包含了操作基础飞行控制的默认程序集（节点）<br>c) 系统库：包含了所有的系统库和基本交通控制的函数<br>d) OS内核：提供硬件驱动程序、网络、UAVCAN和故障安全系统<br>以上是面向PX4系统实现者的具体的软件架构。如果从飞控应用开发者的角度对软件架构进行描述，可以将PX4软件分为两层：<br>a)PX4 Flight Stack: 自主无人机控制算法的集合。<br>b)PX4 Middleware: 针对无人机控制器，传感器等物理设备的驱动及底层通信、调度等机制的集合。<br>多态性（抽象性）是PX4软件架构最显著的特点之一。为了最大限度地保障飞控算法代码的重用性，其将飞控逻辑与底层控制器的指令实现进行了解耦合。利用同一套高层的飞控算法，即可适用于固定翼、直升机、多旋翼等多种机型的控制场合。</p>
 <p><strong>MAVLINK飞行控制协议介绍</strong><br>MAVLINK( Micro Air Vehicle Communication Protocol) 协议，是一种在串口通讯基础上的更高层的开源通信协议，主要用于微小型无人机的通信，包括无人机与地面站以及无人机和机载电脑的通信。该协议于2009年由瑞士苏黎世联邦理工大学的计算机视觉与几何实验室的Lorenz Meier，并遵循LGPL开源协议。PX4提供了对MAVLINK协议的原生支持。<br>MAVLINK协议传输的基本单位是消息帧。下图描述了消息帧的基本单位。除了灰色格子，其他的格子代表了一个字节的数据。<br><img src="http://7xt5o8.com1.z0.glb.clouddn.com/20150402204818032%20%281%29.png" alt=""><br>STX代表起始标志位，在1.0版本中，起始标志位是“FE”。该标志位用于MAVLINK消息帧的消息解码。<br>LEN代表消息帧中PAYLOAD（有效载荷）的字节长度。范围为0~255。在收到一帧消息之后，接收端可以用它和实际收到的有效载荷的字节长度进行比较，以验证有效载荷部分长度的正确性。<br>SEQ代表的是本次消息帧的序号。每发完一个消息，这个字节的内容会加1，在255之后会从0重新开始。接收端用本子节的信息计算消息丢失的比例。<br>SYS代表的是发送本次消息帧的设备系统编号。使用PX4固件的PIXHAWK设备发送消息时系统编号是1，该字节用于接收端识别发送端的设备类型。<br>COMP代表的是发送本条消息帧的设备的单元编号。使用PX4固件的PIXHAWK设备发送消息时默认的单元编号是50，该字节用于接收端识别书发送设备的哪个单元发来的消息。<br>MSG代表有效载荷中消息包的类型编号。接收端根据这个编号来确定有效载荷中的消息类型，从而进行对有效载荷部分的信息的正确解码。<br>PAYLOAD 是消息帧最重要的部分，其中包含了有效载荷的信息。不同消息类型的PAYLOAD字节数长度不一定相同。但都在0-255之间。<br>CKB和CKA是校验位。CKB是高8位校验位，CKA是第八位校验位。该校验码有CRC16算法得到，该算法将消息帧的起始位开始到有效载荷的结束部分进行CRC16计算，从而得到16位的检验码。接收端通过该16位的校验码对收到的消息帧进行校验。<br>以MSG编号为33的消息帧为例，分析消息帧的PAYLOAD组成。该帧消息用来传递无人机当前的GPS位置信息。由下图可知，该消息一共由9部分组成，PAYLOAD的长度为28个字节。消息的第1部分time_boot_ms表示发送消息时系统的时间戳。第2部分lat表示飞机的纬度值，该值是由真实的纬度值乘10的7次方得到的整型值。lon表示飞机经度值。alt表示飞机的海拔高度。而relative_alt表示飞机相对地面的高度。vx,vy,vz分别表示飞机在NED坐标下各分量的速度，以真实值乘100得到的整型值表示。hdg代表飞机当前的yaw角值，以真实值乘100得到的整型值表示。<br><img src="http://7xt5o8.com1.z0.glb.clouddn.com/gss.png" alt=""><br>再以MSG编号为76的COMMAND_LONG消息帧为例，分析地面站或者机载电脑如何通过MAVLINK给无人机发送控制指令。下图描述了该消息帧的PAYLOAD组成。该消息的PAYLOAD由11部分组成，共有33个字节。target_system表示目标的系统编号。target_component表示目标的单元编号。第三部分command非常重要，它描述了该条指令的任务类型，如起飞，降落等等。所有的任务类型在MAV_CMD中定义。不同任务类型的参数个数不一样，但最多有7个参数。<br><img src="http://7xt5o8.com1.z0.glb.clouddn.com/yss.png" alt=""><br>以在GPS导航模式下的起飞任务为例，此时command参数为MAV_CMD_NAV_TAKEOFF, 该任务模式下的参数组成如下图所示。参数1,2,3都没有具体意义。而参数4,5,6分别代表期望的角度，纬度，经度和高度。<br><img src="http://7xt5o8.com1.z0.glb.clouddn.com/jss.png" alt=""><br><strong>仿真程序分析</strong><br>Gazebo是一款3D的机器人仿真软件。利用Gazebo进行飞行仿真的程序框图如下图所示：其中SITL指的是Software in the Loop Simulation，即软件仿真。与其相对的是HIL，Hardware in the Loop Simulation, 即硬件仿真。本实验采用的是SITL。<br><img src="http://7xt5o8.com1.z0.glb.clouddn.com/oss.png" alt=""><br>Plugin是Gazebo提供给开发者的方针模型控制接口，开发者可以自主定义仿真中用到的模型的类型以及参数，并且可以利用自己的程序控制它们。本实验中主要利用了三种类型的Plugin，包括World, Model, 以及Sensor。<br>MAVROS是一个ROS程序包，它的作用就是把MAVLINK消息转换成ROS中的消息，这样就可以以话题的形式在ROS中接受订阅和发布，方便基于ROS的程序控制。<br>利用PX4的Offboard Control模式可以实现利用电脑控制无人机飞行。使用这个模式尤其需要注意的是，在开启该模式后，电脑发送给飞控板的控制指令频率不能小于2    Hz,否则飞控会自动切离该模式。<br>实验分为两个阶段。第1个阶段为起飞阶段。步骤为：切到Offboard Control模式，解锁，设置GPS目标起飞高度,程序中设定的目标起飞高度为1.2m。实验的第2个阶段是以恒定的速度通过走廊，并利用雷达的数据检测墙上的门，在检测到墙上的门之后，改变飞行方向，进入门内。</p>
-<p><strong>仿真结果</strong><br>在本次实验中，成功在单机上实现了利用GPS和雷达数据的Gazebo飞行仿真。在下一步的仿真实验中，将重点研究多无人机在同一仿真场景下的飞行控制，重点在有搭建多条通讯链路和Gazebo的控制模型，从而实现对多架无人机的同步控制，为多无人机编队算法和相应的避障算法的设计和验证提供仿真依据。</p>
-<p><em>附1：仿真视频链接</em><br><a href="http://7xt5o8.com1.z0.glb.clouddn.com/1%20%281%29.mp4" target="_blank" rel="external">http://7xt5o8.com1.z0.glb.clouddn.com/1%20%281%29.mp4</a></p>
+<p><strong>仿真结果</strong><br>在本次实验中，成功在单机上实现了利用GPS和雷达数据的Gazebo飞行仿真。在下一步的仿真实验中，将重点研究多无人机在同一仿真场景下的飞行控制，重点在有搭建多条通讯链路和Gazebo的控制模型，从而实现对多架无人机的同步控制，为多无人机编队算法和相应的避障算法的设计和验证提供仿真依据。<br>仿真视频：</p>
+<video src="http://7xt5o8.com1.z0.glb.clouddn.com/1%20%281%29.mp4" type="video/mp4" controls="controls" width="100%" height="100%"><br></video>
 
       
     </div>
@@ -540,7 +540,7 @@
           
             <div class="site-state-item site-state-posts">
               <a href="/archives">
-                <span class="site-state-item-count">9</span>
+                <span class="site-state-item-count">10</span>
                 <span class="site-state-item-name">日志</span>
               </a>
             </div>
@@ -551,7 +551,7 @@
             
             <div class="site-state-item site-state-categories">
               <a href="/categories/index.html">
-                <span class="site-state-item-count">4</span>
+                <span class="site-state-item-count">5</span>
                 <span class="site-state-item-name">分类</span>
               </a>
             </div>
@@ -562,7 +562,7 @@
             
             <div class="site-state-item site-state-tags">
               <a href="/tags/index.html">
-                <span class="site-state-item-count">14</span>
+                <span class="site-state-item-count">15</span>
                 <span class="site-state-item-name">标签</span>
               </a>
             </div>
