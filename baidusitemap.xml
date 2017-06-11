@@ -4,8 +4,48 @@
 
     
   <url>
+    <loc>http://marsgoxd.com/2017/06/11/rtab-slam/</loc>
+    <lastmod>2017-06-11T13:50:55.564Z</lastmod>
+    <data>
+        <display>
+        <title>rtab_slam</title>
+        <pubTime>2017-06-11T13:39:11.000Z</pubTime>
+        
+        <tag>SLAM</tag>
+         
+         
+           
+             
+              <breadCrumb title="SLAM" url="http://marsgoxd.com/categories/SLAM/"/>
+          
+        </display>
+    </data>
+    </url>
+
+    
+  <url>
+    <loc>http://marsgoxd.com/2017/06/01/SLAM%E5%AD%A6%E4%B9%A0/</loc>
+    <lastmod>2017-06-03T06:27:21.839Z</lastmod>
+    <data>
+        <display>
+        <title>SLAM学习</title>
+        <pubTime>2017-06-01T13:12:38.000Z</pubTime>
+        
+        <tag>SLAM</tag>
+         
+         
+           
+             
+              <breadCrumb title="SLAM" url="http://marsgoxd.com/categories/SLAM/"/>
+          
+        </display>
+    </data>
+    </url>
+
+    
+  <url>
     <loc>http://marsgoxd.com/2017/05/04/guidance2/</loc>
-    <lastmod>2017-06-02T12:01:11.108Z</lastmod>
+    <lastmod>2017-06-03T05:18:45.322Z</lastmod>
     <data>
         <display>
         <title>Guidance三维重建（2）：生成点云</title>
@@ -41,26 +81,6 @@
            
              
               <breadCrumb title="四旋翼" url="http://marsgoxd.com/categories/%E5%9B%9B%E6%97%8B%E7%BF%BC/"/>
-          
-        </display>
-    </data>
-    </url>
-
-    
-  <url>
-    <loc>http://marsgoxd.com/2017/06/01/SLAM%E5%AD%A6%E4%B9%A0/</loc>
-    <lastmod>2017-06-01T13:13:21.937Z</lastmod>
-    <data>
-        <display>
-        <title>SLAM学习</title>
-        <pubTime>2017-06-01T13:12:38.000Z</pubTime>
-        
-        <tag>SLAM</tag>
-         
-         
-           
-             
-              <breadCrumb title="SLAM" url="http://marsgoxd.com/categories/SLAM/"/>
           
         </display>
     </data>
@@ -121,9 +141,9 @@
         <title>Guidance三维重建（1）：基本参数</title>
         <pubTime>2017-02-18T12:56:50.000Z</pubTime>
         
-        <tag>四旋翼</tag>
-         
         <tag>Guidance</tag>
+         
+        <tag>四旋翼</tag>
          
          
            
