@@ -4,9 +4,9 @@
   
   
   <entry>
-    <title>搭建博客</title>
-    <link href="/2023/11/25/%E6%90%AD%E5%BB%BA%E5%8D%9A%E5%AE%A2/"/>
-    <url>/2023/11/25/%E6%90%AD%E5%BB%BA%E5%8D%9A%E5%AE%A2/</url>
+    <title>第一篇文章</title>
+    <link href="/2023/11/25/%E7%AC%AC%E4%B8%80%E7%AF%87%E6%96%87%E7%AB%A0/"/>
+    <url>/2023/11/25/%E7%AC%AC%E4%B8%80%E7%AF%87%E6%96%87%E7%AB%A0/</url>
     
     <content type="html"><![CDATA[<p>今天用hexo框架搭建了个人博客<br>基于hexo+github+腾讯云域名<br>腾讯域名：gomarsuuu.space</p><p>新建文章：hexo -n title </p>]]></content>
     
