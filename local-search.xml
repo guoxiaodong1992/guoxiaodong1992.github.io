@@ -8,7 +8,7 @@
     <link href="/2023/11/25/%E7%AC%AC%E4%B8%80%E7%AF%87%E6%96%87%E7%AB%A0/"/>
     <url>/2023/11/25/%E7%AC%AC%E4%B8%80%E7%AF%87%E6%96%87%E7%AB%A0/</url>
     
-    <content type="html"><![CDATA[<p>今天用hexo框架搭建了个人博客<br>基于hexo+github+腾讯云域名<br>腾讯域名：gomarsuuu.space</p><p>新建文章：hexo -n title </p>]]></content>
+    <content type="html"><![CDATA[<p>今天用hexo框架搭建了个人博客<br>基于hexo+github+腾讯云域名<br>腾讯域名：gomarsuuu.space</p><p>新建文章：hexo -n title<br>删除文章：直接删除md文件</p>]]></content>
     
     
     
