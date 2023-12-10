@@ -8,7 +8,7 @@
     <link href="/2023/12/10/%E5%9C%B0%E5%9B%BE%E8%A1%A8%E8%BE%BE%E6%96%B9%E5%BC%8F%E6%95%B4%E7%90%86/"/>
     <url>/2023/12/10/%E5%9C%B0%E5%9B%BE%E8%A1%A8%E8%BE%BE%E6%96%B9%E5%BC%8F%E6%95%B4%E7%90%86/</url>
     
-    <content type="html"><![CDATA[<p>本文整理常见的地图表达方式。<br>1.mesh：mesh的中文含义为网格。mesh地图，指以三角网格形式表达的地图，如：<br><img src="/img/mesh.jpeg" alt="mesh地图"><br>2.tsdf: truncated signed distance field, 带截断的距离场地图，如：<br>截断的意思是，只在物体表面附近计算，降低计算量；<br><img src="/img/tsdf/webp" alt="tsdf地图"></p>]]></content>
+    <content type="html"><![CDATA[<p>本文整理常见的地图表达方式。<br>1.mesh：mesh的中文含义为网格。mesh地图，指以三角网格形式表达的地图，如：<br><img src="/img/mesh.jpeg" alt="mesh地图"><br>2.tsdf: truncated signed distance field, 带截断的距离场地图，如：<br>截断的意思是，只在物体表面附近计算，降低计算量；<br><img src="/img/tsdf.webp" alt="tsdf地图"></p>]]></content>
     
     
     
