@@ -4,11 +4,24 @@
   
   
   <entry>
+    <title>GNSS定位相关名词</title>
+    <link href="/2023/12/10/GNSS%E5%AE%9A%E4%BD%8D%E7%9B%B8%E5%85%B3%E5%90%8D%E8%AF%8D/"/>
+    <url>/2023/12/10/GNSS%E5%AE%9A%E4%BD%8D%E7%9B%B8%E5%85%B3%E5%90%8D%E8%AF%8D/</url>
+    
+    <content type="html"><![CDATA[<p>有必要梳理一下GNSS定位相关的名词。<br>RTK:Realtime Kinematic:，实时动态载波相位差分技术。需要两台接收机，基站和移动端，实时差分；<br>PPP：Precise Point Positioning，精密单点定位技术，只需要一台接收机i<br>PPK：post processed kinematic，动态后处理技术，需要两台接收机，基站，但不需要建立通讯链路，各自记录数据后，进行事后后处理，实现厘米级的差分定位技术；</p>]]></content>
+    
+    
+    
+  </entry>
+  
+  
+  
+  <entry>
     <title>第一篇文章</title>
     <link href="/2023/11/25/%E7%AC%AC%E4%B8%80%E7%AF%87%E6%96%87%E7%AB%A0/"/>
     <url>/2023/11/25/%E7%AC%AC%E4%B8%80%E7%AF%87%E6%96%87%E7%AB%A0/</url>
     
-    <content type="html"><![CDATA[<p>今天用hexo框架搭建了个人博客<br>基于hexo+github+腾讯云域名<br>腾讯域名：gomarsuuu.space<br>新建文章：hexo -n title<br>删除文章：直接删除md文件</p>]]></content>
+    <content type="html"><![CDATA[<p>今天用hexo框架搭建了个人博客<br>基于hexo+github+腾讯云域名<br>腾讯域名：gomarsuuu.space<br>新建文章：hexo new title<br>删除文章：直接删除md文件</p>]]></content>
     
     
     
